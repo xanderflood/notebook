@@ -1,0 +1,31 @@
+<mat-expansion-panel class="transaction" [(expanded)]="expanded">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Transaction
+    </mat-panel-title>
+    <mat-panel-description>
+      {{ description() }}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-tab-group [(selectedIndex)]="transaction.type" mat-align-tabs="center">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>exposure_plus_1</mat-icon>
+      </ng-template>
+      <input matInput [(ngModel)]="transaction.name" placeholder="Name" />
+      <hr>
+      <input type="number" [(ngModel)]="transaction.count">
+    </mat-tab>
+
+    <mat-tab label="Consumed">
+      <ng-template mat-tab-label>
+        <mat-icon>exposure_neg_1</mat-icon>
+      </ng-template>
+      <!-- TODO: service-backed <select> -->
+      <input matInput [(ngModel)]="transaction.itemUUID" placeholder="UUID" />
+      <hr>
+      <input type="number" [(ngModel)]="transaction.count">
+    </mat-tab>
+  </mat-tab-group>
+</mat-expansion-panel>

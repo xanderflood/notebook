@@ -1,0 +1,16 @@
+<mat-expansion-panel class="transaction" [(expanded)]="expanded">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Entry
+    </mat-panel-title>
+    <mat-panel-description>
+      <input [(ngModel)]="entry.uuid" placeholder="uuid" />
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile *ngFor="let transaction of entry.transactions">
+      <app-transaction [transaction]="transaction" [expanded]=true></app-transaction>
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-expansion-panel>
