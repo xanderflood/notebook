@@ -1,12 +1,26 @@
-export class Transaction {
-  type: TransactionType;
+import { Item } from './item';
+import { Entry } from './entry';
 
-  itemUUID: string; //consumed
-  count: number; //consumed & produced
-  name: string; //produced
+export class Transaction {
+  entry: Entry;
+  item: Item;
+  type: TransactionType;
+  count: number;
+
+  constructor(
+    entry: Entry,
+    item?: Item,
+    type?: TransactionType,
+    count?: number,
+  ) {
+    this.entry = entry;
+    this.item = item || new Item();
+    this.type = type && type || TransactionType.Produced;
+    this.count = count && count || 5;
+  }
 }
 
 export enum TransactionType {
-  Produced = 0,
-  Consumed = 1,
+  Produced = "Produced",
+  Consumed = "Consumed",
 }

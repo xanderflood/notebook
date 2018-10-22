@@ -1,31 +1,44 @@
-<mat-expansion-panel class="transaction" [(expanded)]="expanded">
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Transaction
-    </mat-panel-title>
-    <mat-panel-description>
-      {{ description() }}
-    </mat-panel-description>
-  </mat-expansion-panel-header>
+<mat-card class="example-card">
+  <mat-card-header>
+    <div mat-card-avatar>
+      <mat-icon>
+        <div *ngIf="transaction.type == transactionType.Produced">exposure_plus_1</div>
+        <div *ngIf="transaction.type == transactionType.Consumed">exposure_neg_1</div>
+      </mat-icon>
+    </div>
+    <mat-card-title>
+      <p>{{ transaction.type }} {{ transaction.count }} of {{ transaction.item.name }}</p>
+    </mat-card-title>
+  </mat-card-header>
 
-  <mat-tab-group [(selectedIndex)]="transaction.type" mat-align-tabs="center">
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <mat-icon>exposure_plus_1</mat-icon>
-      </ng-template>
-      <input matInput [(ngModel)]="transaction.name" placeholder="Name" />
-      <hr>
-      <input type="number" [(ngModel)]="transaction.count">
-    </mat-tab>
+  <mat-card-content>
+    <div *ngIf="editMode">    
+      <mat-tab-group [selectedIndex]="types.indexOf(transaction.type)" (selectedIndexChange)="transaction.type = types[$event]">
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>exposure_plus_1</mat-icon>
+          </ng-template>
+          <input matInput [(ngModel)]="transaction.name" placeholder="Name" />
+          <hr>
+          <input matInput type="number" [(ngModel)]="transaction.count">
+        </mat-tab>
 
-    <mat-tab label="Consumed">
-      <ng-template mat-tab-label>
-        <mat-icon>exposure_neg_1</mat-icon>
-      </ng-template>
-      <!-- TODO: service-backed <select> -->
-      <input matInput [(ngModel)]="transaction.itemUUID" placeholder="UUID" />
-      <hr>
-      <input type="number" [(ngModel)]="transaction.count">
-    </mat-tab>
-  </mat-tab-group>
-</mat-expansion-panel>
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>exposure_neg_1</mat-icon>
+          </ng-template>
+          <!-- TODO: service-backed <select> -->
+          <input matInput [(ngModel)]="transaction.itemUUID" placeholder="UUID" />
+          <hr>
+          <input matInput type="number" [(ngModel)]="transaction.count">
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <div *ngIf="editMode">    
+      <mat-card-actions>
+        <button mat-button (click)="remove.emit(transaction)">REMOVE</button>
+      </mat-card-actions>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -9,71 +9,25 @@ import { Transaction, TransactionType } from './transaction'
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  entry: Entry = {
-    uuid: "asdfasdfasd",
-    transactions: [
+  entry: Entry = new Entry([
+    new Transaction(null,
       {
-        type: TransactionType.Consumed,
-        itemUUID: "asf-df-asfd-2-f2f-sdf",
-        count: 6,
-        name: ""
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      },{
-        type: TransactionType.Produced,
-        itemUUID: "",
-        count: 6,
-        name: "Dishes"
-      }
-    ]
-  };
+        uuid: "asf-df-asfd-2-f2f-sdf",
+        name: "dishes",
+        numProduced: 89,
+        numRemaining: 20,
+        history: []
+      },
+      TransactionType.Consumed, 6),
+    new Transaction(null,
+      {
+        uuid: "",
+        name: "dishes",
+        numProduced: 89,
+        numRemaining: 20,
+        history: []
+      },
+      TransactionType.Produced, 7)
+  ]);
   title = 'Notebook';
 }

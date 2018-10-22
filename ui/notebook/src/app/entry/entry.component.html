@@ -1,16 +1,44 @@
 <mat-expansion-panel class="transaction" [(expanded)]="expanded">
   <mat-expansion-panel-header>
     <mat-panel-title>
-      Entry
+      <mat-icon>note</mat-icon>
     </mat-panel-title>
     <mat-panel-description>
-      <input [(ngModel)]="entry.uuid" placeholder="uuid" />
+    <div *ngIf="editMode" (click)="$event.stopPropagation()">
+      <mat-form-field>
+        <input matInput [(ngModel)]="entry.moment" [matDatepicker]="picker" placeholder="Choose a date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input matInput type="number" step="1" min="1" max="24" [(ngModel)]="formHours">
+      </mat-form-field>:
+      <mat-form-field class="example-full-width">
+        <input matInput type="number" step="1" min="0" max="60" [(ngModel)]="formMinutes">
+      </mat-form-field>
+    </div>
+    <div *ngIf="!editMode">
+      {{ momentString() }}
+    </div>
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <mat-grid-list cols="2" rowHeight="2:1">
+  <mat-grid-list cols="2" [rowHeight]="editMode ? '1:1' : '3:1'">
     <mat-grid-tile *ngFor="let transaction of entry.transactions">
-      <app-transaction [transaction]="transaction" [expanded]=true></app-transaction>
+      <app-transaction [transaction]="transaction" [(editMode)]="editMode" (remove)="removeTransaction($event)"></app-transaction>
     </mat-grid-tile>
   </mat-grid-list>
+
+  <mat-action-row>
+    <div *ngIf="editMode">
+      <button mat-button size="small" (click)="addTransaction()">Add</button>
+      <button mat-button size="small" color="primary" (click)="cancelEdit();">Cancel</button>
+      <button mat-button size="small" color="primary" (click)="persistEdit();">Save</button>
+    </div>
+    <div *ngIf="!editMode">
+      <button mat-button size="small" color="primary" (click)="startEdit();">
+        Edit
+      </button>
+    </div>
+  </mat-action-row>
 </mat-expansion-panel>

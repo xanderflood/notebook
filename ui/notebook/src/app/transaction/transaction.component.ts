@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Transaction, TransactionType } from '../transaction';
 
 @Component({
@@ -8,24 +8,14 @@ import { Transaction, TransactionType } from '../transaction';
 })
 export class TransactionComponent implements OnInit {
   @Input() transaction: Transaction;
-  @Input() expanded: boolean;
+  @Input() editMode: boolean;
+  @Output() remove: EventEmitter<Transaction> = new EventEmitter<Transaction>();
 
-  transactionType = TransactionType
+  transactionType = TransactionType;
+  types = Object.values(TransactionType);
 
   constructor() { }
 
   ngOnInit() {
-  }
-
-  description(): string {
-    if (this.transaction.type == TransactionType.Produced) {
-      return `Produced ${this.transaction.count} of ${this.transaction.name}`
-    } else {
-      return `Consumed ${this.transaction.count} of ${this.transaction.itemUUID}`
-    }
-  }
-
-  produced(): void {
-
   }
 }
