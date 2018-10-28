@@ -6,9 +6,21 @@ export class Item {
   name: string = "";
   // properties: ItemProperties;
 
+  constructor(
+    uuid: string,
+    name: string,
+  ) {
+    this.uuid = uuid;
+    this.name = name;
+  }
+
   numProduced: number = 0;
   numRemaining: number = 0;
   history: Transaction[] = [];
+
+  static fromObject = function(o): Item {
+    return new Item(o.uuid, o.name);
+  }
 }
 
 // interface ItemProperties {

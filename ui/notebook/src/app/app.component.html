@@ -2,11 +2,27 @@
 
 <div class="container content">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-2">
       <h1>
-        {{ title }}!
+        {{ title }}
       </h1>
-      <app-entry [entry]="entry" [expanded]="true"></app-entry>
+    </div>
+    <div class="col-md-5">
+    </div>
+    <div class="col-md-1">
+      <button mat-button (click)="newEntry()">
+        <mat-icon>note_add</mat-icon>
+        New Entry
+      </button>
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-entry *ngFor="let entry of entries" [entry]="entry" [expanded]="true"></app-entry>
       <router-outlet></router-outlet>
     </div>
 

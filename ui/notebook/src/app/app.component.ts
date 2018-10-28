@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { EntryService } from './entry.service';
 
 import { Entry } from './entry';
 import { Transaction, TransactionType } from './transaction'
@@ -8,26 +9,20 @@ import { Transaction, TransactionType } from './transaction'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  entry: Entry = new Entry([
-    new Transaction(null,
-      {
-        uuid: "asf-df-asfd-2-f2f-sdf",
-        name: "dishes",
-        numProduced: 89,
-        numRemaining: 20,
-        history: []
-      },
-      TransactionType.Consumed, 6),
-    new Transaction(null,
-      {
-        uuid: "",
-        name: "dishes",
-        numProduced: 89,
-        numRemaining: 20,
-        history: []
-      },
-      TransactionType.Produced, 7)
-  ]);
+export class AppComponent implements OnInit {
+  entries: Entry[];
   title = 'Notebook';
+
+  constructor(private entryService: EntryService) { }
+
+  ngOnInit() {
+    this.getEntries();
+  }
+
+  getEntries(): void {
+    this.entryService.getEntries()
+    .subscribe(entries => this.entries = entries);
+  }
+
+  // addEntry(): void {/* TODO */}
 }

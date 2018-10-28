@@ -12,13 +12,13 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div *ngIf="editMode">    
+    <div *ngIf="editMode">
       <mat-tab-group [selectedIndex]="types.indexOf(transaction.type)" (selectedIndexChange)="transaction.type = types[$event]">
         <mat-tab>
           <ng-template mat-tab-label>
             <mat-icon>exposure_plus_1</mat-icon>
           </ng-template>
-          <input matInput [(ngModel)]="transaction.name" placeholder="Name" />
+          <input matInput [(ngModel)]="transaction.item.name" placeholder="Name" />
           <hr>
           <input matInput type="number" [(ngModel)]="transaction.count">
         </mat-tab>
@@ -28,7 +28,7 @@
             <mat-icon>exposure_neg_1</mat-icon>
           </ng-template>
           <!-- TODO: service-backed <select> -->
-          <input matInput [(ngModel)]="transaction.itemUUID" placeholder="UUID" />
+          <input matInput [(ngModel)]="transaction.item.uuid" placeholder="UUID" />
           <hr>
           <input matInput type="number" [(ngModel)]="transaction.count">
         </mat-tab>

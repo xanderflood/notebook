@@ -20,10 +20,13 @@ export class EntryService {
     console.log(`EntryService: ${message}`);
   }
 
-  getEntries (): Observable<Entry[]> {
+  getEntries(): Observable<Entry[]> {
     return this.http.get<Entry[]>(this.entriesURL)
       .pipe(
-        tap(entries => this.log('fetched entries')),
+        tap(entries => {
+          this.log('fetched entries');
+        }),
+        map(entries => entries.map(entry => Entry.fromObject(entry))),
         catchError(this.handleError('getEntries', []))
       );
   }
@@ -54,29 +57,29 @@ export class EntryService {
   //////// Save methods //////////
 
   /** POST: add a new entry to the server */
-  addEntry (entry: Entry): Observable<Entry> {
+  create(entry: Entry): Observable<Entry> {
     return this.http.post<Entry>(this.entriesURL, entry, httpOptions).pipe(
       tap((entry: Entry) => this.log(`added entry w/ id=${entry.uuid}`)),
       catchError(this.handleError<Entry>('addEntry'))
     );
   }
 
-  /** DELETE: delete the entry from the server */
-  deleteEntry (entry: Entry | number): Observable<Entry> {
-    const id = typeof entry === 'number' ? entry : entry.uuid;
-    const url = `${this.entriesURL}/${id}`;
-
-    return this.http.delete<Entry>(url, httpOptions).pipe(
-      tap(_ => this.log(`deleted entry id=${id}`)),
-      catchError(this.handleError<Entry>('deleteEntry'))
+  /** PUT: update the entry on the server */
+  update(entry: Entry): Observable<any> {
+    return this.http.patch(this.entriesURL, entry, httpOptions).pipe(
+      tap(_ => this.log(`updated entry id=${entry.uuid}`)),
+      catchError(this.handleError<any>('updateEntry'))
     );
   }
 
-  /** PUT: update the entry on the server */
-  updateEntry (entry: Entry): Observable<any> {
-    return this.http.put(this.entriesURL, entry, httpOptions).pipe(
-      tap(_ => this.log(`updated entry id=${entry.uuid}`)),
-      catchError(this.handleError<any>('updateEntry'))
+  /** DELETE: delete the entry from the server */
+  delete(entry: Entry | string): Observable<Entry> {
+    const uuid = typeof entry === 'string' ? entry : entry.uuid;
+    const url = `${this.entriesURL}/${uuid}`;
+
+    return this.http.delete<Entry>(url, httpOptions).pipe(
+      tap(_ => this.log(`deleted entry id=${uuid}`)),
+      catchError(this.handleError<Entry>('deleteEntry'))
     );
   }
 
@@ -86,7 +89,7 @@ export class EntryService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure

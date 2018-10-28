@@ -1,60 +1,32 @@
 import { InMemoryDbService } from 'angular-in-memory-web-api';
-import { TransactionType } from './transaction'
+import { Transaction, TransactionType } from './transaction'
 import { Entry } from './entry';
+import { Item } from './item';
 
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
-    const entries = [
-      {
-        uuid: "11", transactions: [
-          {
-            type: TransactionType.Consumed,
-            itemUUID: "asf-df-asfd-2-f2f-sdf",
-            count: 6,
-            name: ""
-          }, {
-            type: TransactionType.Produced,
-            itemUUID: "",
-            count: 6,
-            name: "Dishes"
-          }, {
-            type: TransactionType.Produced,
-            itemUUID: "",
-            count: 6,
-            name: "Dishes"
-          }, {
-            type: TransactionType.Produced,
-            itemUUID: "",
-            count: 6,
-            name: "Dishes"
-          }
-        ]
-      },
-      {
-        uuid: "12", transactions: [
-          {
-            type: TransactionType.Consumed,
-            itemUUID: "asf-df-asfd-2-f2f-sdf",
-            count: 6,
-            name: ""
-          }, {
-            type: TransactionType.Produced,
-            itemUUID: "",
-            count: 6,
-            name: "Dishes"
-          }
-        ]
-      }
-    ];
-    return { entries };
-  }
+    var boroDish = new Item("item-0", "borosilicate dish, 60mm");
+    var pp5Dish = new Item("item-1", "PP5 dish, 45mm");
+    var hwfpJar = new Item("item-2", "HWFP jar, 1 qt");
+    var no17LC = new Item("item-3", "#17 LC");
+    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt");
+    const items = [boroDish, pp5Dish, hwfpJar, no17LC, no17HWFP];
 
-  // Overrides the genId method to ensure that a hero always has an id.
-  // If the entries array is empty,
-  // the method below returns the initial number (11).
-  // if the entries array is not empty, the method below returns the highest
-  // hero id + 1.
-  // genId(entries: Entry[]): string {
-  //   return entries.length > 0 ? Math.max(...entries.map(hero => hero.uuid)) : 11;
-  // }
+    const entries = [
+      new Entry([
+        new Transaction(hwfpJar, TransactionType.Consumed, 10),
+        new Transaction(no17LC, TransactionType.Consumed, 1),
+        new Transaction(no17HWFP, TransactionType.Produced, 10),
+      ]),
+      new Entry([
+        new Transaction(boroDish, TransactionType.Produced, 40),
+        new Transaction(pp5Dish, TransactionType.Produced, 40)
+      ])
+    ];
+
+    return {
+      entries: entries,
+      items: items,
+    };
+  }
 }
