@@ -18,7 +18,6 @@
           <ng-template mat-tab-label>
             <mat-icon>exposure_plus_1</mat-icon>
           </ng-template>
-          <input matInput [(ngModel)]="transaction.item.name" placeholder="Name" />
           <hr>
           <input matInput type="number" [(ngModel)]="transaction.count">
         </mat-tab>
@@ -27,8 +26,7 @@
           <ng-template mat-tab-label>
             <mat-icon>exposure_neg_1</mat-icon>
           </ng-template>
-          <!-- TODO: service-backed <select> -->
-          <input matInput [(ngModel)]="transaction.item.uuid" placeholder="UUID" />
+          <app-item-selector [(selection)]="item"></app-item-selector>
           <hr>
           <input matInput type="number" [(ngModel)]="transaction.count">
         </mat-tab>

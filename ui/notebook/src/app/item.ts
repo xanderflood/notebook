@@ -16,6 +16,8 @@ export class Item {
 
   numProduced: number = 0;
   numRemaining: number = 0;
+
+  //TODO keep this, or a separate join table?
   history: Transaction[] = [];
 
   static fromObject = function(o): Item {
