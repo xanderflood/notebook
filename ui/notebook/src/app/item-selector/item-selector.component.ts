@@ -17,7 +17,7 @@ export class ItemSelectorComponent implements OnInit {
   @Input() itemFocused: boolean;
   @Input() items: Item[] = [];
 
-  tbFocused: boolean;
+  overlay: boolean;
   filteredItems: Observable<Item[]>;
   itemCtrl = new FormControl();
 
@@ -61,12 +61,11 @@ export class ItemSelectorComponent implements OnInit {
   setSelection(item: Item) {
     this.selection = item;
     //TODO unfocus the textbox
-    //TODO display the description coverup
   }
 
-  itemDisplay(item: Item): string {
-    if (!item) { return this.itemCtrl.value; }
-    return item.name + " | " + item.numRemaining;
+  itemName(item: Item): string {
+    if (!item) { return this.itemCtrl ? this.itemCtrl.value : ""; }
+    return item.name;
   }
 
   private _filterItems(value: string): Item[] {

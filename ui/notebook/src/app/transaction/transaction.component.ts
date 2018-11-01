@@ -19,3 +19,10 @@ export class TransactionComponent implements OnInit {
   ngOnInit() {
   }
 }
+
+/*
+ *
+ * TODO: restructure the transaction form to use a
+ * radio group instead of mat-tabs
+ *
+ */
