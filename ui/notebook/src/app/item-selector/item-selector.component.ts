@@ -58,6 +58,12 @@ export class ItemSelectorComponent implements OnInit {
       );
   }
 
+  setSelection(item: Item) {
+    this.selection = item;
+    //TODO unfocus the textbox
+    //TODO display the description coverup
+  }
+
   itemDisplay(item: Item): string {
     if (!item) { return this.itemCtrl.value; }
     return item.name + " | " + item.numRemaining;

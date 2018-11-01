@@ -1,7 +1,7 @@
 <mat-form-field style="width: %100;">
   <div *ngIf="tbFocus"><!-- TODO: add a div that _covers_ the input whenever the input is unfocused, and displays the selected item --></div>
   <input matInput placeholder="Item" aria-label="Item" [matAutocomplete]="auto" [formControl]="itemCtrl" (focus)="tbFocus = true;" (focusout)="tbFocus = false;">
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="itemDisplay" (optionSelected)="$event.option == new ? newItem() : selection = $event.option.value">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="$event.option == new ? newItem() : selection = $event.option.value">
     <mat-option #new (selected)="console.log('HERE');">New item...</mat-option>
     <mat-option *ngFor="let item of filteredItems | async" [value]="item">
       <span>{{item.name}}</span> |

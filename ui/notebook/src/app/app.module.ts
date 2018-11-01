@@ -21,15 +21,13 @@ import { AppComponent } from './app.component';
 import { EntryComponent } from './entry/entry.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { ItemSelectorComponent } from './item-selector/item-selector.component';
-import { SelectPanelComponent } from './item-selector/select-panel/select-panel.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     EntryComponent,
     TransactionComponent,
-    ItemSelectorComponent,
-    SelectPanelComponent
+    ItemSelectorComponent
   ],
   imports: [
     BrowserModule,
