@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit, Input, Output } from '@angular/core';
+import { Component, ChangeDetectorRef, EventEmitter, OnInit, Input, Output } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 import { map, startWith, merge } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
@@ -12,10 +12,17 @@ import { ItemService } from '../item.service';
 })
 export class ItemSelectorComponent implements OnInit {
   @Input() queryText: string;
-  @Input() selection: Item;
   @Input() focused;
   @Input() itemFocused: boolean;
   @Input() items: Item[] = [];
+
+  selectionValue: Item;
+  @Input() get selection(): Item { return this.selectionValue; }
+  @Output() selectionChange = new EventEmitter<Item>();
+  set selection(item: Item) {
+    this.selectionValue = item;
+    this.selectionChange.emit(this.selectionValue);
+  };
 
   overlay: boolean;
   filteredItems: Observable<Item[]>;
@@ -53,14 +60,9 @@ export class ItemSelectorComponent implements OnInit {
         startWith(''),
         merge(this.itemCtrl.valueChanges),
         map<void, Item[]>(() => {
-          return this.itemCtrl.value ? this._filterItems(this.itemCtrl.value) : this.items.slice()
+          return this.itemCtrl.value ? this._filterItems(this.itemCtrl.value) : this.items.slice();
         })
       );
-  }
-
-  setSelection(item: Item) {
-    this.selection = item;
-    //TODO unfocus the textbox
   }
 
   itemName(item: Item): string {
@@ -69,9 +71,13 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   private _filterItems(value: string): Item[] {
-    value = value.toLowerCase();
+    //if there's already a selection
+    if (typeof value == 'object') {
+      return [];
+    }
 
     //TODO fuzzy search
+    value = value.toLowerCase();
     return this.items.filter(item => item.name.toLowerCase().indexOf(value) === 0);
   }
 }

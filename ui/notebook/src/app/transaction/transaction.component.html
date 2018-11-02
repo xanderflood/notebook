@@ -14,24 +14,23 @@
   <mat-card-content>
     <div *ngIf="editMode">
       <mat-radio-group style="width: 100%;" [(ngModel)]="transaction.type">
-        <span style="position: absolute; width: 50%;">
+        <div style="display: inline-block; width: 50%; text-align: center;">
           <mat-radio-button [value]="transactionType.Produced">
             Produced
           </mat-radio-button>
-        </span>
-        <span style="margin-left: 50%;">
+        </div><div style="display: inline-block; width: 50%; text-align: center;">
           <mat-radio-button [value]="transactionType.Consumed">
             Consumed
           </mat-radio-button>
-        </span>
+        </div>
       </mat-radio-group>
 
       <div>
-        <app-item-selector style="width: 100%;" [(selection)]="item"></app-item-selector>
+        <app-item-selector style="width: 100%;" [(selection)]="item" (selectionChange)="countInput.focus();"></app-item-selector>
       </div>
 
-      <div>
-        <input matInput type="number" [(ngModel)]="transaction.count">
+      <div  style="background-color: #EEEEEE;" >
+        <input #countInput matInput type="number" [(ngModel)]="transaction.count"/>
       </div>
 
       <mat-card-actions>

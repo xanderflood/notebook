@@ -2,15 +2,15 @@
   <div style="position: relative; width: 100%;">
     <!-- TODO: make both of these  -->
     <div style="position: relative;  width: 100%; height: 100%; z-index: 0; margin: 0px; padding: 0px;">
-      <input matInput placeholder="Item" aria-label="Item" [matAutocomplete]="auto" [formControl]="itemCtrl" (focus)="overlay = false;" (focusout)="overlay = true;" />
+      <input matInput placeholder="Item" aria-label="Item" [matAutocomplete]="auto" [formControl]="itemCtrl" (focus)="overlay = false;" (focusout)="overlay = true;" style="background-color: #EEEEEE;" />
     </div>
-    <div *ngIf="overlay" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 1; background-color: #EEEEEE;">
+    <div *ngIf="overlay && selection" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 1; background-color: #E1E1E1;">
       <span>{{selection?.name}}</span> |
       <small>{{selection?.numRemaining}}</small>
     </div>
   </div>
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="itemName" (optionSelected)="$event.option == new ? newItem() : selection = $event.option.value">
-    <mat-option #new (selected)="console.log('HERE');">New item...</mat-option>
+    <mat-option #new>New item...</mat-option>
     <mat-option *ngFor="let item of filteredItems | async" [value]="item">
       <span>{{item.name}}</span> |
       <small>{{item.numRemaining}}</small>
