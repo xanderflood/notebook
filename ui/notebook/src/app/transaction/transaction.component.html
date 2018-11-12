@@ -26,10 +26,10 @@
       </mat-radio-group>
 
       <div>
-        <app-item-selector style="width: 100%;" [(selection)]="item" (selectionChange)="countInput.focus();"></app-item-selector>
+        <app-item-selector style="width: 100%;" [(selection)]="transaction.item" (selectionChange)="countInput.focus();" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
       </div>
 
-      <div  style="background-color: #EEEEEE;" >
+      <div style="background-color: #EEEEEE;" >
         <input #countInput matInput type="number" [(ngModel)]="transaction.count"/>
       </div>
 

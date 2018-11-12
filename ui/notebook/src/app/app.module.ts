@@ -21,14 +21,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EntryComponent } from './entry/entry.component';
 import { TransactionComponent } from './transaction/transaction.component';
-import { ItemSelectorComponent } from './item-selector/item-selector.component';
+import { ItemSelectorComponent, NewItemFormDialog } from './item-selector/item-selector.component';
+import { NewItemFormComponent } from './new-item-form/new-item-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     EntryComponent,
     TransactionComponent,
-    ItemSelectorComponent
+    ItemSelectorComponent,
+    NewItemFormComponent,
+    NewItemFormDialog
   ],
   imports: [
     BrowserModule,
@@ -50,6 +53,7 @@ import { ItemSelectorComponent } from './item-selector/item-selector.component';
     MatAutocompleteModule,
     MatRadioModule
   ],
+  entryComponents: [NewItemFormDialog],
   providers: [],
   bootstrap: [AppComponent]
 })

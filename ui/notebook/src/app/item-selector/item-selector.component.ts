@@ -1,9 +1,12 @@
-import { Component, ChangeDetectorRef, EventEmitter, OnInit, Input, Output } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
+import { Component, ChangeDetectorRef, EventEmitter, OnInit, Input, Output, Inject } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { map, startWith, merge } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
-import { Item } from '../item';
 import { ItemService } from '../item.service';
+import { FormControl } from '@angular/forms';
+import { Observable, Observer } from 'rxjs';
+import { Item } from '../item';
+
+import { NewItemFormComponent } from '../new-item-form/new-item-form.component';
 
 @Component({
   selector: 'app-item-selector',
@@ -11,11 +14,11 @@ import { ItemService } from '../item.service';
   styleUrls: ['./item-selector.component.scss']
 })
 export class ItemSelectorComponent implements OnInit {
-  @Input() queryText: string;
   @Input() focused;
-  @Input() itemFocused: boolean;
+  @Input() allowNew;
   @Input() items: Item[] = [];
 
+  queryText: string;
   selectionValue: Item;
   @Input() get selection(): Item { return this.selectionValue; }
   @Output() selectionChange = new EventEmitter<Item>();
@@ -24,18 +27,15 @@ export class ItemSelectorComponent implements OnInit {
     this.selectionChange.emit(this.selectionValue);
   };
 
-  overlay: boolean;
+  overlay: boolean = true;
   filteredItems: Observable<Item[]>;
   itemCtrl = new FormControl();
 
   constructor(
     private itemService: ItemService,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    public dialog: MatDialog
   ) { }
-
-  newItem() {
-    console.log("TODO: new item dialog");
-  }
 
   ngOnInit() {
     //TODO better way to do this?
@@ -50,7 +50,7 @@ export class ItemSelectorComponent implements OnInit {
     //update items from HTTP
     this.itemService.getItems().subscribe(items => {
       this.items = items;
-      obs.next(null);
+      obs ? obs.next(null) : null;
     });
 
     //refilter the items after the textbox value
@@ -60,9 +60,27 @@ export class ItemSelectorComponent implements OnInit {
         startWith(''),
         merge(this.itemCtrl.valueChanges),
         map<void, Item[]>(() => {
+          this.queryText = this.itemCtrl.value;
           return this.itemCtrl.value ? this._filterItems(this.itemCtrl.value) : this.items.slice();
         })
       );
+  }
+
+  optionSelected($event: any): void {
+    if ($event.option.value) {
+      this.selection = $event.option.value;
+    } else {
+      this.dialog.open(
+        NewItemFormDialog,
+        { width: '250px' })
+
+      .afterClosed().subscribe(result => {
+        console.log('TODO: handling new item return:', result);
+
+        //TODO: handle the error or
+        //append newly created item or error
+      });
+    }
   }
 
   itemName(item: Item): string {
@@ -79,5 +97,23 @@ export class ItemSelectorComponent implements OnInit {
     //TODO fuzzy search
     value = value.toLowerCase();
     return this.items.filter(item => item.name.toLowerCase().indexOf(value) === 0);
+  }
+}
+
+@Component({
+  selector: 'app-new-item-dialog',
+  template: '<app-new-item-form></app-new-item-form>'
+})
+export class NewItemFormDialog implements OnInit {
+
+  constructor(public dialogRef: MatDialogRef<NewItemFormDialog>) {
+    //TOO
+  }
+
+  ngOnInit() {
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 }

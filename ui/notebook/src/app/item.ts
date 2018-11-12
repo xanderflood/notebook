@@ -26,7 +26,11 @@ export class Item {
   }
 
   static fromObject = function(o): Item {
-    return new Item(o.uuid, o.name, o.numProduced, o.numRemaining);
+    return new Item(
+      o.uuid,
+      o.name,
+      o.numProduced,
+      o.numRemaining);
   }
 }
 
