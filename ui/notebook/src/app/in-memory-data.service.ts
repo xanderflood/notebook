@@ -5,11 +5,11 @@ import { Item } from './item';
 
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
-    var boroDish = new Item("item-0", "borosilicate dish, 60mm");
-    var pp5Dish = new Item("item-1", "PP5 dish, 45mm");
-    var hwfpJar = new Item("item-2", "HWFP jar, 1 qt");
-    var no17LC = new Item("item-3", "#17 LC");
-    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt");
+    var boroDish = new Item("item-0", "borosilicate dish, 60mm", 10, 5);
+    var pp5Dish = new Item("item-1", "PP5 dish, 45mm", 10, 6);
+    var hwfpJar = new Item("item-2", "HWFP jar, 1 qt", 10, 8);
+    var no17LC = new Item("item-3", "#17 LC", 10, 6);
+    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", 72, 12);
     const items = [boroDish, pp5Dish, hwfpJar, no17LC, no17HWFP];
 
     const entries = [

@@ -11,7 +11,7 @@ export class Transaction {
     type?: TransactionType,
     count?: number,
   ) {
-    this.item = item || new Item("", "");
+    this.item = item || new Item("", "", 0, 0);
     this.type = type && type || TransactionType.Produced;
     this.count = count && count || 5;
   }
