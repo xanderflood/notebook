@@ -1,3 +1,12 @@
-<p>
-  new-item-form works!
-</p>
+<h1 mat-dialog-title>New Item</h1>
+
+<div mat-dialog-content>
+  <input matInput placeholder="Name" aria-label="Name" [(ngModel)]="name"/>
+
+  <!-- TODO: key-value properties -->
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button (click)="save()">Save</button>
+</div>

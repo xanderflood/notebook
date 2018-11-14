@@ -1,11 +1,13 @@
-import { Component, ChangeDetectorRef, EventEmitter, OnInit, Input, Output, Inject } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { map, startWith, merge } from 'rxjs/operators';
 import { ItemService } from '../item.service';
 import { FormControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
-import { Item } from '../item';
 
+import { Observable, Observer } from 'rxjs';
+import { map, startWith, merge, combineLatest } from 'rxjs/operators';
+
+import { Item } from '../item';
+import { ItemLookup } from '../item-lookup';
 import { NewItemFormComponent } from '../new-item-form/new-item-form.component';
 
 @Component({
@@ -18,7 +20,6 @@ export class ItemSelectorComponent implements OnInit {
   @Input() allowNew;
   @Input() items: Item[] = [];
 
-  queryText: string;
   selectionValue: Item;
   @Input() get selection(): Item { return this.selectionValue; }
   @Output() selectionChange = new EventEmitter<Item>();
@@ -33,36 +34,22 @@ export class ItemSelectorComponent implements OnInit {
 
   constructor(
     private itemService: ItemService,
-    private ref: ChangeDetectorRef,
+    private itemLookup: ItemLookup,
     public dialog: MatDialog
   ) { }
 
   ngOnInit() {
-    //TODO better way to do this?
-    //TODO do I need to eventually call obs.complete()?
-
-    //create a channel for HTTP updates to trigger refiltering
-    var obs: Observer<any>;
-    var refilterObs = Observable.create(function(innerObs: Observer<any>) {
-      obs = innerObs;
-    })
-
-    //update items from HTTP
-    this.itemService.getItems().subscribe(items => {
-      this.items = items;
-      obs ? obs.next(null) : null;
-    });
-
-    //refilter the items after the textbox value
-    //changes _or_ the items list is updated
-    this.filteredItems =
-      refilterObs.pipe(
-        startWith(''),
-        merge(this.itemCtrl.valueChanges),
-        map<void, Item[]>(() => {
-          this.queryText = this.itemCtrl.value;
-          return this.itemCtrl.value ? this._filterItems(this.itemCtrl.value) : this.items.slice();
-        })
+    //TODO: merge this with:
+    // (1) this.itemLookup.items
+    // (2) keyup events
+    // (3) focus events
+    this.filteredItems = this.itemCtrl.valueChanges
+      .pipe(
+        startWith(""),
+        merge(this.itemLookup.items),
+        //TODO merge some more signals here
+        map(() => this.itemCtrl.value || ""),
+        map(q => this.itemLookup.filterItems(q)),
       );
   }
 
@@ -74,46 +61,39 @@ export class ItemSelectorComponent implements OnInit {
         NewItemFormDialog,
         { width: '250px' })
 
-      .afterClosed().subscribe(result => {
-        console.log('TODO: handling new item return:', result);
+        .afterClosed().subscribe(result => {
+          if (result) {
+            this.selection = result;
 
-        //TODO: handle the error or
-        //append newly created item or error
-      });
+            //ask the ItemLookup to get a fresh
+            //copy of the item list
+            this.itemLookup.refresh();
+          }
+        });
     }
   }
 
   itemName(item: Item): string {
+    //TODO: why doesn't this work properly?
     if (!item) { return this.itemCtrl ? this.itemCtrl.value : ""; }
     return item.name;
-  }
-
-  private _filterItems(value: string): Item[] {
-    //if there's already a selection
-    if (typeof value == 'object') {
-      return [];
-    }
-
-    //TODO fuzzy search
-    value = value.toLowerCase();
-    return this.items.filter(item => item.name.toLowerCase().indexOf(value) === 0);
   }
 }
 
 @Component({
   selector: 'app-new-item-dialog',
-  template: '<app-new-item-form></app-new-item-form>'
+  template: '<app-new-item-form (closed)="close($event)"></app-new-item-form>'
 })
 export class NewItemFormDialog implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<NewItemFormDialog>) {
-    //TOO
-  }
+  constructor(
+    public dialogRef: MatDialogRef<NewItemFormDialog>,
+  ) { }
 
   ngOnInit() {
   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
+  close(item: Item): void {
+    this.dialogRef.close(item);
   }
 }

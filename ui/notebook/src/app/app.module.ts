@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from './in-memory-data.service';
+// import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+// import { InMemoryDataService } from './in-memory-data.service';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule, MatInputModule, MatButtonModule, MatNativeDateModule } from '@angular/material';
@@ -23,6 +23,7 @@ import { EntryComponent } from './entry/entry.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { ItemSelectorComponent, NewItemFormDialog } from './item-selector/item-selector.component';
 import { NewItemFormComponent } from './new-item-form/new-item-form.component';
+import { fakeBackendProvider } from './fake-backend.service';
 
 @NgModule({
   declarations: [
@@ -38,9 +39,9 @@ import { NewItemFormComponent } from './new-item-form/new-item-form.component';
     AppRoutingModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
-    HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
-    ),
+    // HttpClientInMemoryWebApiModule.forRoot(
+    //   InMemoryDataService, { dataEncapsulation: false }
+    // ),
 
     BrowserAnimationsModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,
@@ -54,7 +55,7 @@ import { NewItemFormComponent } from './new-item-form/new-item-form.component';
     MatRadioModule
   ],
   entryComponents: [NewItemFormDialog],
-  providers: [],
+  providers: [fakeBackendProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { EntryService } from '../entry.service';
 
+import { ItemLookup } from '../item-lookup';
 import { Entry } from '../entry';
 import { Transaction, TransactionType } from '../transaction';
 
@@ -18,9 +19,20 @@ export class EntryComponent implements OnInit {
   @Input() formMinutes: number;
   private frozenEntry: Entry;
 
-  constructor(private entryService: EntryService) { }
+  @Output() cancel = new EventEmitter();
+  @Output() save = new EventEmitter<Entry>();
+
+  constructor(
+    private entryService: EntryService,
+    private itemLookup: ItemLookup,
+  ) { }
 
   ngOnInit() {
+    if (this.editMode) { this.startEdit(); }
+  }
+
+  get persisted(): boolean {
+    return this.entry.uuid ? this.entry.uuid.length > 0 : false;
   }
 
   momentString(): string {
@@ -37,13 +49,13 @@ export class EntryComponent implements OnInit {
 
     return (this.entry.moment.getMonth() + 1) + '/' +
       this.entry.moment.getDate() + '/' +
-      this.entry.moment.getFullYear() + ' ' + 
+      this.entry.moment.getFullYear() + ' ' +
       hour + ':' + minute + mString;
   }
 
   startEdit() {
     this.frozenEntry = this.entry;
-    this.entry = this.entry.copy();
+    this.entry = Entry.copy(this.entry);
     this.formHours = this.entry.moment.getHours();
     this.formMinutes = this.entry.moment.getMinutes();
     this.editMode = true;
@@ -52,6 +64,8 @@ export class EntryComponent implements OnInit {
   cancelEdit() {
     this.entry = this.frozenEntry;
     this.editMode = false;
+    this.cancel.emit();
+    console.log("cancel signal sent");
   }
 
   persistEdit() {
@@ -61,16 +75,31 @@ export class EntryComponent implements OnInit {
       this.entry.moment.getDate(),
       this.formHours, this.formMinutes);
 
-    //TODO: save and then set this.entry to the returned value
-    if (this.entry.uuid.length > 0) {
+    if (this.persisted) {
       // PATCH
-      // this.entry = this.entryService.update(this.entry);
+      console.log("about to update entry:", this.entry);
+      this.entryService.update(this.entry)
+        .subscribe(
+          success => {
+            this.entry = success
+            this.editMode = false;
+            this.save.emit(success);
+          },
+          error => console.log("TODO: display error: ", error),
+        );
     } else {
       // POST
-      // this.entry = this.entryService.create(this.entry);
+      console.log("about to create entry:", this.entry);
+      this.entryService.create(this.entry)
+        .subscribe(
+          success => {
+            this.entry = success
+            this.editMode = false;
+            this.save.emit(success);
+          },
+          error => console.log("TODO: display error: ", error),
+        );
     }
-
-    this.editMode = false;
   }
 
   delete(transaction: Transaction) {

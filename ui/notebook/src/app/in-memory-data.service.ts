@@ -3,6 +3,9 @@ import { Transaction, TransactionType } from './transaction'
 import { Entry } from './entry';
 import { Item } from './item';
 
+declare function require(name:string);
+const uuid: any = require('uuidv4');
+
 export class InMemoryDataService implements InMemoryDbService {
   createDb() {
     var boroDish = new Item("item-0", "borosilicate dish, 60mm", 10, 5);
@@ -28,5 +31,9 @@ export class InMemoryDataService implements InMemoryDbService {
       entries: entries,
       items: items,
     };
+  }
+
+  genId(_: any): string {
+    return uuid();
   }
 }

@@ -10,6 +10,7 @@
     </div>
   </div>
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="itemName" (optionSelected)="optionSelected($event)">
+    <!-- TODO: use (click) here instead of (optionSelected), so you can grab the textbox value before it gets wiped out -->
     <mat-option *ngIf="allowNew" #new>New item...</mat-option>
     <mat-option *ngFor="let item of filteredItems | async" [value]="item">
       <span>{{item.name}}</span> |

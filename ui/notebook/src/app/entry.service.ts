@@ -11,7 +11,7 @@ const httpOptions = {
 
 @Injectable({ providedIn: 'root' })
 export class EntryService {
-  private entriesURL = 'api/entries';
+  private entriesURL = '/api/entries';
 
   constructor(
     private http: HttpClient) { }
@@ -23,10 +23,8 @@ export class EntryService {
   getEntries(): Observable<Entry[]> {
     return this.http.get<Entry[]>(this.entriesURL)
       .pipe(
-        tap(entries => {
-          this.log('fetched entries');
-        }),
         map(entries => entries.map(entry => Entry.fromObject(entry))),
+        tap(() => this.log('fetched entries')),
         catchError(this.handleError('getEntries', []))
       );
   }
@@ -36,7 +34,7 @@ export class EntryService {
     const url = `${this.entriesURL}/?uuid=${uuid}`;
     return this.http.get<Entry[]>(url)
       .pipe(
-        map(entries => entries[0]), // returns a {0|1} element array
+        map(entries => Entry.fromObject(entries[0])), // returns a {0|1} element array
         tap(h => {
           const outcome = h ? `fetched` : `did not find`;
           this.log(`${outcome} entry uuid=${uuid}`);
@@ -49,7 +47,8 @@ export class EntryService {
   getEntry(uuid: string): Observable<Entry> {
     const url = `${this.entriesURL}/${uuid}`;
     return this.http.get<Entry>(url).pipe(
-      tap(_ => this.log(`fetched entry uuid=${uuid}`)),
+      tap(() => this.log(`fetched entry uuid=${uuid}`)),
+      map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>(`getEntry uuid=${uuid}`))
     );
   }
@@ -60,7 +59,8 @@ export class EntryService {
   create(entry: Entry): Observable<Entry> {
     return this.http.post<Entry>(this.entriesURL, entry, httpOptions).pipe(
       tap((entry: Entry) => this.log(`added entry w/ uuid=${entry.uuid}`)),
-      catchError(this.handleError<Entry>('addEntry'))
+      map(entry => Entry.fromObject(entry)),
+      catchError(this.handleError<Entry>('createEntry'))
     );
   }
 
@@ -68,6 +68,7 @@ export class EntryService {
   update(entry: Entry): Observable<any> {
     return this.http.patch(this.entriesURL, entry, httpOptions).pipe(
       tap(_ => this.log(`updated entry uuid=${entry.uuid}`)),
+      map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<any>('updateEntry'))
     );
   }
@@ -99,7 +100,8 @@ export class EntryService {
       this.log(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
-      return of(result as T);
+      throw(error);
+      // return of(result as T);
     };
   }
 }
