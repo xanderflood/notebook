@@ -65,7 +65,6 @@ export class EntryComponent implements OnInit {
     this.entry = this.frozenEntry;
     this.editMode = false;
     this.cancel.emit();
-    console.log("cancel signal sent");
   }
 
   persistEdit() {
@@ -77,7 +76,6 @@ export class EntryComponent implements OnInit {
 
     if (this.persisted) {
       // PATCH
-      console.log("about to update entry:", this.entry);
       this.entryService.update(this.entry)
         .subscribe(
           success => {
@@ -89,7 +87,6 @@ export class EntryComponent implements OnInit {
         );
     } else {
       // POST
-      console.log("about to create entry:", this.entry);
       this.entryService.create(this.entry)
         .subscribe(
           success => {

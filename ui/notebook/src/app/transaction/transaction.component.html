@@ -29,9 +29,11 @@
         <app-item-selector style="width: 100%;" [(selection)]="transaction.item" (selectionChange)="countInput.focus();" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
       </div>
 
-      <div style="background-color: #EEEEEE;" >
+      <div style="background-color: #EEEEEE;">
         <input #countInput matInput type="number" [(ngModel)]="transaction.count"/>
       </div>
+
+      <app-item-properties [properties]="transaction.item.properties"></app-item-properties>
 
       <mat-card-actions>
         <button mat-button (click)="remove.emit(transaction)">Remove</button>

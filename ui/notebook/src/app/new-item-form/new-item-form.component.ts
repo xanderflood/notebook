@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { Item } from '../item';
+import { Item, ItemProperty } from '../item';
 import { ItemService } from '../item.service';
 
 @Component({
@@ -10,6 +10,7 @@ import { ItemService } from '../item.service';
 })
 export class NewItemFormComponent implements OnInit {
   name: string;
+  properties: ItemProperty[] = [];
   @Output() closed = new EventEmitter<void | Item>();
 
   constructor(private itemService: ItemService) { }
@@ -23,18 +24,14 @@ export class NewItemFormComponent implements OnInit {
 
   save() {
     //TODO handle errors like name collisions
-    this.itemService.create(new Item("", this.name, 0, 0))
+    this.itemService.create(new Item("", this.name, 0, 0, this.properties))
       .subscribe(
         success => {
-          console.log("HTTP response:", success);
           this.closed.emit(success);
         },
         error => {
-          //TODO display error message
-
-          console.log("failed:");
-          console.log(error);
-          console.log("^that's it");
-        });
+          console.log("TODO: display error message");
+        }
+      );
   }
 }

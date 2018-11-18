@@ -24,6 +24,8 @@ import { TransactionComponent } from './transaction/transaction.component';
 import { ItemSelectorComponent, NewItemFormDialog } from './item-selector/item-selector.component';
 import { NewItemFormComponent } from './new-item-form/new-item-form.component';
 import { fakeBackendProvider } from './fake-backend.service';
+import { ItemPropertiesComponent } from './item-properties/item-properties.component';
+import { ItemPropertiesFormComponent } from './item-properties-form/item-properties-form.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { fakeBackendProvider } from './fake-backend.service';
     TransactionComponent,
     ItemSelectorComponent,
     NewItemFormComponent,
-    NewItemFormDialog
+    NewItemFormDialog,
+    ItemPropertiesComponent,
+    ItemPropertiesFormComponent,
   ],
   imports: [
     BrowserModule,
