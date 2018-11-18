@@ -39,15 +39,10 @@ export class ItemSelectorComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    //TODO: merge this with:
-    // (1) this.itemLookup.items
-    // (2) keyup events
-    // (3) focus events
     this.filteredItems = this.itemCtrl.valueChanges
       .pipe(
         startWith(""),
         merge(this.itemLookup.items),
-        //TODO merge some more signals here
         map(() => this.itemCtrl.value || ""),
         map(q => this.itemLookup.filterItems(q)),
       );
@@ -59,7 +54,7 @@ export class ItemSelectorComponent implements OnInit {
     } else {
       this.dialog.open(
         NewItemFormDialog,
-        { width: '250px' })
+        { width: '50vw', maxWidth: '400px', minWidth: '350px' })
 
         .afterClosed().subscribe(result => {
           if (result) {

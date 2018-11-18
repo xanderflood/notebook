@@ -5,24 +5,28 @@ export class Item {
   uuid: string = "";
   name: string = "";
 
-  //TODO: properties: ItemProperties;
+  properties: ItemProperty[];
 
   //TODO keep this, or a separate join table?
-  // history: Transaction[] = [];
+  // history: string[] = [];
 
   numProduced: number = 0;
   numRemaining: number = 0;
 
   constructor(
-    uuid: string,
-    name: string,
-    numProduced: number,
-    numRemaining: number,
+    uuid?: string,
+    name?: string,
+    numProduced?: number,
+    numRemaining?: number,
+    properties?: ItemProperty[],
   ) {
+    // leave these possibly undefined
     this.uuid = uuid;
     this.name = name;
-    this.numProduced = numProduced;
-    this.numRemaining = numRemaining;
+
+    this.numProduced = numProduced || 0;
+    this.numRemaining = numRemaining || 0;
+    this.properties = properties || [];
   }
 
   static fromObject = function(o): Item {
@@ -30,10 +34,17 @@ export class Item {
       o.uuid,
       o.name,
       o.numProduced,
-      o.numRemaining);
+      o.numRemaining,
+      o.properties);
   }
 }
 
-// interface ItemProperties {
-//   [key: string]: string;
-// }
+export class ItemProperty {
+  constructor(
+    public name?: string,
+    public value?: string,
+  ) {
+    this.name = this.name || "";
+    this.value = this.value || "";
+  }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, pipe, timer } from 'rxjs';
-import { tap, filter, switchMap, merge, debounceTime, share } from 'rxjs/operators';
+import { filter, switchMap, startWith } from 'rxjs/operators';
 
 import { Item } from './item'
 import { ItemService } from './item.service'
@@ -19,7 +19,7 @@ export class ItemLookup {
     //update this.itemArray periodically and on special request 
     var ticker = this.refreshSubject
       .pipe(
-        merge(timer(0, 5000)),
+        startWith(null),
         filter(() => this.active),
         switchMap(() => this.service.getItems()),
       ).subscribe(items => {
