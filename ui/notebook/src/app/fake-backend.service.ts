@@ -9,12 +9,34 @@ import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
 import { Item } from './item';
 import { Entry } from './entry';
 import { Repository } from './repository';
+import { Transaction, TransactionType } from './transaction'
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
 
-  private items: Repository<Item> = new Repository<Item>();
-  private entries: Repository<Entry> = new Repository<Entry>();
+  private boroDish = new Item("item-0", "borosilicate dish, 60mm", 10, 5);
+  private pp5Dish = new Item("item-1", "PP5 dish, 45mm", 10, 6);
+  private hwfpJar = new Item("item-2", "HWFP jar, 1 qt", 10, 8, [
+    { name: "createdat", value: "02/13/4392 32:21:64" },
+  ]);
+  private no17LC = new Item("item-3", "#17 LC", 10, 6);
+  private no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", 72, 12);
+  private itemsArray = [this.boroDish, this.pp5Dish, this.hwfpJar, this.no17LC, this.no17HWFP];
+
+  private entriesArray = [
+    new Entry([
+      new Transaction(this.hwfpJar, TransactionType.Consumed, 10),
+      new Transaction(this.no17LC, TransactionType.Consumed, 1),
+      new Transaction(this.no17HWFP, TransactionType.Produced, 10),
+    ]),
+    new Entry([
+      new Transaction(this.boroDish, TransactionType.Produced, 40),
+      new Transaction(this.pp5Dish, TransactionType.Produced, 40)
+    ])
+  ];
+
+  private items: Repository<Item> = new Repository<Item>(this.itemsArray);
+  private entries: Repository<Entry> = new Repository<Entry>(this.entriesArray);
 
   constructor() { }
 
@@ -49,7 +71,6 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
       // get items
       if (request.url.endsWith('/api/items') && request.method === 'GET') {
-        console.log("sending items", this.items.all());
         return of(new HttpResponse({ status: 200, body: this.items.all() }));
       }
 
