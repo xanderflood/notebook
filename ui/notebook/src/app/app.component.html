@@ -12,7 +12,7 @@
     <div class="col-md-5">
     </div>
     <div class="col-md-1">
-      <button *ngIf="!creating" mat-button (click)="newEntry()">
+      <button *ngIf="!creating" mat-button (click)="dispatchNew()">
         <mat-icon>note_add</mat-icon>
         New Entry
       </button>
@@ -22,9 +22,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <app-entry *ngIf="creating" [entry]="unsavedEntry" [expanded]="true" (cancel)="newCanceled()" (save)="newSaved($event)" [editMode]="true"></app-entry>
-      <app-entry *ngFor="let entry of entries" [entry]="entry" [expanded]="true"></app-entry>
-      <router-outlet></router-outlet>
+      <app-entry-list></app-entry-list>
     </div>
   </div>
 </div>

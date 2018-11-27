@@ -4,9 +4,9 @@
       <mat-icon>note</mat-icon>
     </mat-panel-title>
     <mat-panel-description>
-    <div *ngIf="editMode" (click)="$event.stopPropagation()">
+    <div *ngIf="(editing | async)" (click)="$event.stopPropagation()">
       <mat-form-field style="width: 100px;">
-        <input matInput [(ngModel)]="entry.moment" [matDatepicker]="picker" placeholder="Choose a date" focused="true">
+        <input matInput [value]="subject?.moment" [matDatepicker]="picker" placeholder="Choose a date" focused="true">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
@@ -17,26 +17,26 @@
         <input matInput type="number" step="1" min="0" max="59" [(ngModel)]="formMinutes">
       </mat-form-field>
     </div>
-    <div *ngIf="!editMode">
+    <div *ngIf="!(editing | async)">
       {{ momentString() }}
     </div>
     </mat-panel-description>
   </mat-expansion-panel-header>
 
-  <mat-grid-list cols="2" [rowHeight]="editMode ? '1:1' : '3:1'">
-    <mat-grid-tile *ngFor="let transaction of entry.transactions">
-      <app-transaction [transaction]="transaction" [(editMode)]="editMode" (remove)="delete($event)"></app-transaction>
+  <mat-grid-list cols="2" [rowHeight]="gridListAspectRatio">
+    <mat-grid-tile *ngFor="let transaction of subject?.transactions">
+      <app-transaction [transaction]="transaction" [editMode]="editing | async" (remove)="delete($event)"></app-transaction>
     </mat-grid-tile>
   </mat-grid-list>
 
   <mat-action-row>
-    <div *ngIf="editMode">
+    <div *ngIf="(editing | async)">
       <button mat-button size="small" (click)="add()">Add</button>
-      <button mat-button size="small" color="primary" (click)="cancelEdit();">Cancel</button>
-      <button mat-button size="small" color="primary" (click)="persistEdit();">Save</button>
+      <button mat-button size="small" color="primary" (click)="dispatchCancel();">Cancel</button>
+      <button mat-button size="small" color="primary" (click)="dispatchSave();">Save</button>
     </div>
-    <div *ngIf="!editMode">
-      <button mat-button size="small" color="primary" (click)="startEdit();">
+    <div *ngIf="!(editing | async)">
+      <button mat-button size="small" color="primary" (click)="dispatchEdit();">
         Edit
       </button>
     </div>

@@ -1,9 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { EntryService } from '../entry.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs'
+import { combineLatest, startWith, tap } from 'rxjs/operators'
 
-import { ItemLookup } from '../item-lookup';
-import { Entry } from '../entry';
-import { Transaction, TransactionType } from '../transaction';
+import { AppState, EntryFormState } from '../store/app.state'
+import { getEntryFormStateEditing, getEntryFormStateLoading, getEntryFormStateSubject, getEntryFormStateError } from '../store/app.selectors'
+import { EditEntry, CancelEntry, SaveEntry } from '../store/app.actions'
+
+import { Entry } from '../models/entry.model';
+import { Transaction } from '../models/transaction.model';
 
 @Component({
   selector: 'app-entry',
@@ -11,100 +16,96 @@ import { Transaction, TransactionType } from '../transaction';
   styleUrls: ['./entry.component.scss']
 })
 export class EntryComponent implements OnInit {
-  @Input() entry: Entry;
+  @Input() uuid: (string | null) = null;
   @Input() expanded: boolean;
 
-  @Input() editMode: boolean;
-  @Input() formHours: number;
-  @Input() formMinutes: number;
-  private frozenEntry: Entry;
+  loading: Observable<boolean>; //TODO disable and spin
+  editing: Observable<boolean>;
 
-  @Output() cancel = new EventEmitter();
-  @Output() save = new EventEmitter<Entry>();
+  subjectObs: Observable<Entry>;
+  subject: Entry;
+  storeSubject: Entry;
 
-  constructor(
-    private entryService: EntryService,
-    private itemLookup: ItemLookup,
-  ) { }
+  formHours: number;
+  formMinutes: number;
+
+  gridListAspectRatio: string = '1:1';
+
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    if (this.editMode) { this.startEdit(); }
+    this.editing = this.store.select(getEntryFormStateEditing(this.uuid))
+    .pipe(startWith(false));
+    this.loading = this.store.select(getEntryFormStateLoading(this.uuid))
+    .pipe(startWith(false));
+    this.subjectObs = this.store.select(getEntryFormStateSubject(this.uuid));
+
+    this.editing.pipe(
+      combineLatest(this.subjectObs, (e, s) => {
+        return {
+          editing: e,
+          subject: s,
+        };
+      }),
+    ).subscribe(data => {
+      //update the FE copy and the stored BE copy of this entry
+      this.subject = data.subject
+      this.storeSubject = data.subject;
+
+      if (data.editing) {
+        this.storeSubject = data.subject;
+        this.formHours = data.subject.moment.getHours();
+        this.formMinutes = data.subject.moment.getMinutes();
+        this.gridListAspectRatio = '1:1';
+      } else {
+        this.subject = Entry.copy(this.storeSubject);
+        this.gridListAspectRatio = '3:1';
+      }
+    });
   }
 
-  get persisted(): boolean {
-    return this.entry.uuid ? this.entry.uuid.length > 0 : false;
+  dispatchEdit() {
+    this.store.dispatch(new EditEntry(this.subject));
+  }
+
+  dispatchCancel() {
+    this.store.dispatch(new CancelEntry(this.subject));
+  }
+
+  dispatchSave() {
+    this.subject.moment = new Date(
+      this.subject.moment.getFullYear(),
+      this.subject.moment.getMonth(),
+      this.subject.moment.getDate(),
+      this.formHours, this.formMinutes);
+
+    this.store.dispatch(new SaveEntry(this.subject));
+  }
+
+  delete(transaction: Transaction) {
+    this.subject.transactions
+      = this.subject.transactions.filter(t => (t != transaction));
+  }
+
+  add() {
+    this.subject.transactions.push(new Transaction);
   }
 
   momentString(): string {
     var mString = "AM";
-    var hour = this.entry.moment.getHours();
+    var hour = this.subject.moment.getHours();
     if (hour > 12) {
       hour -= 12;
       mString = "PM";
     }
-    var minute = "" + this.entry.moment.getMinutes();
+    var minute = "" + this.subject.moment.getMinutes();
     if (minute.length < 2) {
       minute = "0" + minute;
     }
 
-    return (this.entry.moment.getMonth() + 1) + '/' +
-      this.entry.moment.getDate() + '/' +
-      this.entry.moment.getFullYear() + ' ' +
+    return (this.subject.moment.getMonth() + 1) + '/' +
+      this.subject.moment.getDate() + '/' +
+      this.subject.moment.getFullYear() + ' ' +
       hour + ':' + minute + mString;
-  }
-
-  startEdit() {
-    this.frozenEntry = this.entry;
-    this.entry = Entry.copy(this.entry);
-    this.formHours = this.entry.moment.getHours();
-    this.formMinutes = this.entry.moment.getMinutes();
-    this.editMode = true;
-  }
-
-  cancelEdit() {
-    this.entry = this.frozenEntry;
-    this.editMode = false;
-    this.cancel.emit();
-  }
-
-  persistEdit() {
-    this.entry.moment = new Date(
-      this.entry.moment.getFullYear(),
-      this.entry.moment.getMonth(),
-      this.entry.moment.getDate(),
-      this.formHours, this.formMinutes);
-
-    if (this.persisted) {
-      // PATCH
-      this.entryService.update(this.entry)
-        .subscribe(
-          success => {
-            this.entry = success
-            this.editMode = false;
-            this.save.emit(success);
-          },
-          error => console.log("TODO: display error: ", error),
-        );
-    } else {
-      // POST
-      this.entryService.create(this.entry)
-        .subscribe(
-          success => {
-            this.entry = success
-            this.editMode = false;
-            this.save.emit(success);
-          },
-          error => console.log("TODO: display error: ", error),
-        );
-    }
-  }
-
-  delete(transaction: Transaction) {
-    this.entry.transactions
-      = this.entry.transactions.filter(t => (t != transaction));
-  }
-
-  add() {
-    this.entry.transactions.push(new Transaction);
   }
 }

@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>New Item</h1>
+
+<div mat-dialog-content>
+  <input matInput placeholder="Name" aria-label="Name" [(ngModel)]="name" style="background-color: #EEEEEE;" [value]="name"/>
+
+  <app-item-properties-form [(properties)]="properties"></app-item-properties-form>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="dispatchCancel()">Cancel</button>
+  <button mat-button (click)="dispatchSave()">Save</button>
+</div>

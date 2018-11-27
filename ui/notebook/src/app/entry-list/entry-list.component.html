@@ -1,0 +1,2 @@
+<app-entry *ngIf="(newEntryFormActive | async)" [uuid]="null" [expanded]="true"></app-entry>
+<app-entry *ngFor="let entry of (entries | async)" [uuid]="entry.uuid" [expanded]="true"></app-entry>

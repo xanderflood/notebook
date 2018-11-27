@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { ItemProperty } from '../item'
+import { ItemProperty } from '../models/item.model'
 
 @Component({
   selector: 'app-item-properties',

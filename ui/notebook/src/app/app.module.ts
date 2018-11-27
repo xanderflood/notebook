@@ -1,11 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+
+// component libraries
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-
-// import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-// import { InMemoryDataService } from './in-memory-data.service';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule, MatInputModule, MatButtonModule, MatNativeDateModule } from '@angular/material';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -17,35 +14,54 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
 
-import { AppRoutingModule } from './app-routing.module';
+// import { AppRoutingModule } from './app-routing.module';
+import { environment } from '../environments/environment';
+
+// http stuff
+import { HttpClientModule } from '@angular/common/http';
+import { mockBackendProvider } from './mocks/backend.mock';
+
+// ngrx
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+import { AppReducer } from './store/app.reducers'
+import { AppEffects } from './store/app.effects'
+
+// components
 import { AppComponent } from './app.component';
+import { EntryListComponent } from './entry-list/entry-list.component';
 import { EntryComponent } from './entry/entry.component';
 import { TransactionComponent } from './transaction/transaction.component';
-import { ItemSelectorComponent, NewItemFormDialog } from './item-selector/item-selector.component';
-import { NewItemFormComponent } from './new-item-form/new-item-form.component';
-import { fakeBackendProvider } from './fake-backend.service';
+import { ItemSelectorComponent } from './item-selector/item-selector.component';
+import { ItemFormDialog } from './item-form-dialog/item-form-dialog.component';
+import { ItemFormComponent } from './item-form/item-form.component';
 import { ItemPropertiesComponent } from './item-properties/item-properties.component';
 import { ItemPropertiesFormComponent } from './item-properties-form/item-properties-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    EntryListComponent,
     EntryComponent,
     TransactionComponent,
     ItemSelectorComponent,
-    NewItemFormComponent,
-    NewItemFormDialog,
+    ItemFormComponent,
+    ItemFormDialog,
     ItemPropertiesComponent,
     ItemPropertiesFormComponent,
+    ItemFormDialog,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+    // AppRoutingModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
-    // HttpClientInMemoryWebApiModule.forRoot(
-    //   InMemoryDataService, { dataEncapsulation: false }
-    // ),
+
+    StoreModule.forRoot({ app: AppReducer }),
+    EffectsModule.forRoot([AppEffects]),
+    !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
 
     BrowserAnimationsModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,
@@ -58,8 +74,8 @@ import { ItemPropertiesFormComponent } from './item-properties-form/item-propert
     MatAutocompleteModule,
     MatRadioModule
   ],
-  entryComponents: [NewItemFormDialog],
-  providers: [fakeBackendProvider],
+  entryComponents: [ItemFormDialog],
+  providers: [mockBackendProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

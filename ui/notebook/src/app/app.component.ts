@@ -1,43 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { EntryService } from './entry.service';
+import { Store } from '@ngrx/store';
 
-import { ItemLookup } from './item-lookup';
-import { Entry } from './entry';
-import { Transaction, TransactionType } from './transaction'
+import { AppState } from './store/app.state'
+import { NewEntry, GetEntries, GetItems } from './store/app.actions'
+import { getEntryFormStateEditing } from './store/app.selectors'
+import { Entry } from './models/entry.model';
+import { Transaction, TransactionType } from './models/transaction.model'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  providers: [ItemLookup]
 })
 export class AppComponent implements OnInit {
-  entries: Entry[];
   title = 'Notebook';
 
   creating: boolean = false;
-  unsavedEntry: Entry = new Entry();
 
   constructor(
-    private entryService: EntryService,
-    private itemLookup: ItemLookup,
-  ) { }
+    private store: Store<AppState>,
+  ) {
+    this.store.select(getEntryFormStateEditing())
+    .subscribe(e => this.creating = e);
+  }
 
   ngOnInit() {
-    this.getEntries();
+    this.store.dispatch(new GetItems());
+    this.store.dispatch(new GetEntries());
   }
 
-  getEntries(): void {
-    this.entryService.getEntries()
-      .subscribe(entries => this.entries = entries);
+  dispatchNew() {
+    this.store.dispatch(new NewEntry());
   }
 
-  newEntry(): void { this.creating = true; }
-  newCanceled() { this.creating = false; }
-
-  newSaved(entry: Entry) {
-    this.unsavedEntry = new Entry();
-    this.creating = false;
-    this.entries.splice(0, 1, entry);
-  }
 }

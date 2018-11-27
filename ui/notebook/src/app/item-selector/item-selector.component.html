@@ -2,16 +2,15 @@
   <div style="position: relative; width: 100%;">
     <!-- TODO: make both of these  -->
     <div style="position: relative;  width: 100%; height: 100%; z-index: 0; margin: 0px; padding: 0px;">
-      <input matInput #querybox placeholder="Item" aria-label="Item" [matAutocomplete]="auto" [formControl]="itemCtrl" style="background-color: #EEEEEE;" />
+      <input matInput #querybox placeholder="Item" aria-label="Item" [matAutocomplete]="auto" [formControl]="queryCtrl" style="background-color: #EEEEEE;" />
     </div>
-    <div *ngIf="(querybox !== querybox.ownerDocument.activeElement) && selection" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 1; background-color: #E1E1E1;">
-      <span>{{selection?.name}}</span> |
-      <small>{{selection?.numRemaining}} remaining</small>
+    <div *ngIf="overlayIsVisible()" style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 1; background-color: #E1E1E1;">
+      <span>{{selectedItem.name}}</span> |
+      <small>{{selectedItem.numRemaining}} remaining</small>
     </div>
   </div>
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="itemName" (optionSelected)="optionSelected($event)">
-    <!-- TODO: use (click) here instead of (optionSelected), so you can grab the textbox value before it gets wiped out -->
-    <mat-option *ngIf="allowNew" #new>New item...</mat-option>
+    <mat-option *ngIf="allowNew" (click)="stopStoringText()">New item...</mat-option>
     <mat-option *ngFor="let item of filteredItems | async" [value]="item">
       <span>{{item.name}}</span> |
       <small>{{item.numRemaining}} remaining</small>
