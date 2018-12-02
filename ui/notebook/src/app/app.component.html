@@ -9,20 +9,23 @@
         {{ title }}
       </h1>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-2">
     </div>
-    <div class="col-md-1">
+    <div class="col-md-2">
       <button *ngIf="showNew | async" mat-button (click)="dispatchNew()">
         <mat-icon>note_add</mat-icon>
         New Entry
       </button>
     </div>
     <div class="col-md-2">
+      <app-nav-menu></app-nav-menu>
+    </div>
+    <div class="col-md-2">
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <app-entry-list></app-entry-list>
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

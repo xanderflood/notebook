@@ -1,0 +1,7 @@
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  <mat-icon>more_vert</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <app-nav-item [href]="'log'" [text]="'Log'"></app-nav-item>
+  <app-nav-item [href]="'inventory'" [text]="'Inventory'"></app-nav-item>
+</mat-menu>

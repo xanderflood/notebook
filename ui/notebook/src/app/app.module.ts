@@ -13,8 +13,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
 
-// import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { environment } from '../environments/environment';
 
 // http stuff
@@ -39,6 +40,9 @@ import { ItemFormDialog } from './item-form-dialog/item-form-dialog.component';
 import { ItemFormComponent } from './item-form/item-form.component';
 import { ItemPropertiesComponent } from './item-properties/item-properties.component';
 import { ItemPropertiesFormComponent } from './item-properties-form/item-properties-form.component';
+import { InventoryComponent } from './inventory/inventory.component';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { ItemComponent } from './nav-menu/item/item.component';
 
 @NgModule({
   declarations: [
@@ -52,10 +56,13 @@ import { ItemPropertiesFormComponent } from './item-properties-form/item-propert
     ItemPropertiesComponent,
     ItemPropertiesFormComponent,
     ItemFormDialog,
+    InventoryComponent,
+    NavMenuComponent,
+    ItemComponent,
   ],
   imports: [
     BrowserModule,
-    // AppRoutingModule,
+    AppRoutingModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
 
@@ -72,7 +79,8 @@ import { ItemPropertiesFormComponent } from './item-properties-form/item-propert
     MatTabsModule,
     MatDatepickerModule, MatNativeDateModule,
     MatAutocompleteModule,
-    MatRadioModule
+    MatRadioModule,
+    MatMenuModule
   ],
   entryComponents: [ItemFormDialog],
   providers: [mockBackendProvider],
