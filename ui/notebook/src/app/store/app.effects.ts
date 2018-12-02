@@ -58,7 +58,7 @@ export class AppEffects {
       .pipe(
         mergeMap(action =>
           this.entryService.saveEntry(action.entry).pipe(
-            map(entry => new AppActions.SaveEntrySuccess(entry)),
+            map(entry => new AppActions.SaveEntrySuccess(action.entry.uuid, entry)),
             catchError(() => of(new AppActions.SaveEntryError(action.entry, "Failed to save entry."))),
           )
         ),

@@ -15,16 +15,7 @@ import * as AppActions from '../store/app.actions';
   styleUrls: ['./entry-list.component.scss']
 })
 export class EntryListComponent implements OnInit {
-  @Input()
-  newEntryFormActive: Observable<boolean> = this.store.select(
-    getEntryFormStateEditing(null))
-    .pipe(startWith(false));
-
-  @Input()
-  newEntryFormLoading: Observable<boolean> = this.store.select(getEntryFormStateLoading(null));
-
-  @Input()
-  entries: Observable<Entry[]> = this.store.select(getEntriesArray);
+  @Input() entries: Observable<Entry[]> = this.store.select(getEntriesArray);
 
   constructor(private store: Store<AppState>) { }
 

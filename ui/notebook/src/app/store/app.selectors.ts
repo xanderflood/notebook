@@ -54,25 +54,25 @@ export const getItemData = (uuid: string) => createSelector(
 ///////////
 
 //entries
-export const getEntryFormState = (uuid?: string) => createSelector(
+export const getEntryFormState = (uuid: string) => createSelector(
   getDataState,
-  state => uuid ? state.entries.repository.fetch(uuid) : state.newEntryForm,
+  state => state.entries.repository.fetch(uuid),
 );
-export const getEntryFormStateEditing = (uuid?: string) => createSelector(
+export const getEntryFormStateEditing = (uuid: string) => createSelector(
   getEntryFormState(uuid),
-  formState => formState.editing,
+  formState => formState ? formState.editing : false,
 );
-export const getEntryFormStateLoading = (uuid?: string) => createSelector(
+export const getEntryFormStateLoading = (uuid: string) => createSelector(
   getEntryFormState(uuid),
-  formState => formState.loading,
+  formState => formState ? formState.loading : false,
 );
-export const getEntryFormStateSubject = (uuid?: string) => createSelector(
+export const getEntryFormStateSubject = (uuid: string) => createSelector(
   getEntryFormState(uuid),
-  formState => formState.subject,
+  formState => formState ? formState.subject : null,
 );
-export const getEntryFormStateError = (uuid?: string) => createSelector(
+export const getEntryFormStateError = (uuid: string) => createSelector(
   getEntryFormState(uuid),
-  formState => formState.error,
+  formState => formState ? formState.error : "",
 );
 
 //items

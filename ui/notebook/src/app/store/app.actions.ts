@@ -81,7 +81,9 @@ export class SaveEntry implements Action {
 }
 export class SaveEntrySuccess implements Action {
   readonly type = SAVE_ENTRY_SUCCESS;
-  constructor(public entry: Entry) { }
+  // the uuid of the EntryForm to be updated may not match the entry.
+  // e.g. for a new entry, uuid="", but entry has a uuid now.
+  constructor(public uuid: string, public entry: Entry) { }
 }
 export class SaveEntryError implements Action {
   readonly type = SAVE_ENTRY_ERROR;

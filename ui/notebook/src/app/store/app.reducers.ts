@@ -3,6 +3,7 @@ import * as AppActions from './app.actions';
 
 import { Entry } from '../models/entry.model';
 import { Item } from '../models/item.model';
+import { Transaction } from '../models/transaction.model';
 import { Repository } from './repository';
 
 const defaultState: EntriesAndItemsManager = AppState.default().app;
@@ -80,23 +81,39 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
     // save entry //
     ////////////////
     case AppActions.SAVE_ENTRY: {
-      return updateEntryFormState(
-        state, action.entry.uuid, { loading: true },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: true,
+          }),
+        }
+      };
     }
     case AppActions.SAVE_ENTRY_SUCCESS: {
-      return updateEntryFormState(
-        state, action.entry.uuid, {
-          subject: action.entry,
-          editing: false,
-          loading: false,
-        },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.uuid, {
+            subject: action.entry,
+            loading: false,
+            editing: false,
+          }),
+        }
+      };
     }
     case AppActions.SAVE_ENTRY_ERROR: {
-      return updateEntryFormState(
-        state, action.entry.uuid, { loading: false },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: false,
+          }),
+        }
+      };
     }
 
     ///////////////
@@ -138,19 +155,38 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
     // delete entry //
     //////////////////
     case AppActions.DELETE_ENTRY: {
-      return updateEntryFormState(
-        state, action.entry.uuid, { loading: true },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: true,
+          }),
+        }
+      };
     }
     case AppActions.DELETE_ENTRY_SUCCESS: {
-      return updateEntryFormState(
-        state, action.entry.uuid, { loading: false },
-      );
+      //TODO temporarily replace with delete marker
+      // remove it a second later
+
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.delete(action.entry.uuid),
+        }
+      };
     }
     case AppActions.DELETE_ENTRY_ERROR: {
-      return updateEntryFormState(
-        state, action.entry.uuid, { loading: false },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: false,
+          }),
+        }
+      };
     }
 
     /////////////////
@@ -196,23 +232,54 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
     // new entry //
     ///////////////
     case AppActions.NEW_ENTRY: {
-      return updateNewEntryFormState(state, {
-          subject: new Entry(),
-          editing: true,
-        },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.save(new EntryFormState(
+            new Entry([new Transaction()]), true,
+          )),
+        }
+      };
     }
     case AppActions.EDIT_ENTRY: {
-      return updateEntryFormState(state, action.entry.uuid, {
-          editing: true,
-        },
-      );
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            editing: true,
+          }),
+        }
+      };
     }
     case AppActions.CANCEL_ENTRY: {
-      return updateEntryFormState(state, action.entry.uuid, {
-          editing: false,
-        },
-      );
+      if (action.entry.uuid.length > 0) {
+        return {
+          ...state,
+          entries: {
+            ...state.entries,
+            repository: state.entries.repository.update(action.entry.uuid, {
+              editing: false,
+            }),
+          }
+        };
+      } else {
+        return {
+          ...state,
+          entries: {
+            ...state.entries,
+            repository: state.entries.repository.delete(""),
+          }
+        };
+      }
+      // return {
+      //   ...state,
+      //   entries: {
+      //     ...state.entries,
+      //     repository: state.entries.repository.delete(""),
+      //   }
+      // };
     }
 
     //////////////
@@ -251,42 +318,4 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
     default:
       return state;
   }
-}
-
-function updateEntryFormState(
-  state: EntriesAndItemsManager,
-  uuid: string,
-  update: any,
-): EntriesAndItemsManager {
-  if (uuid && uuid.length > 0) {
-    var form = state.entries.repository.fetch(uuid);
-    return {
-      ...state,
-      entries: {
-        ...state.entries,
-        repository: state.entries.repository.save({
-          ...form,
-          ...update,
-        }),
-      },
-    };
-  } else {
-    return updateNewEntryFormState(state, update);
-  }
-}
-
-function updateNewEntryFormState(
-  state: EntriesAndItemsManager,
-  update: any,
-): EntriesAndItemsManager {
-  return {
-    ...state,
-    newEntryForm: {
-      ...state.newEntryForm,
-      subject: {
-        ...state.newEntryForm.subject,
-        ...update,
-      },
-    },
-  };
 }

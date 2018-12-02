@@ -18,6 +18,10 @@ export class Transaction {
       o.type,
       o.count);
   }
+
+  static copy(transaction: Transaction): Transaction {
+    return Transaction.fromObject(transaction);
+  }
 }
 
 export enum TransactionType {

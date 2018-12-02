@@ -28,6 +28,10 @@ export class Item implements UUIDable {
       o.numRemaining,
       o.properties);
   }
+
+  static copy(item: Item): Item {
+    return Item.fromObject(item);
+  }
 }
 
 export class ItemProperty {

@@ -24,7 +24,6 @@ export class AppState {
 export class EntriesAndItemsManager {
   constructor(
     public entries: EntriesData,
-    public newEntryForm: EntryFormState,
     public items: ItemsData,
     public itemForm: ItemFormState, //used for editing _and_ creating
   ) { }
@@ -32,7 +31,6 @@ export class EntriesAndItemsManager {
   static default() {
     return new EntriesAndItemsManager(
       EntriesData.default(),
-      EntryFormState.default(),
       ItemsData.default(),
       ItemFormState.default(),
     );

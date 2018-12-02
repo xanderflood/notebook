@@ -73,7 +73,7 @@ export class MockBackendInterceptor implements HttpInterceptor {
 
       // get items
       if (request.url.endsWith('/api/items') && request.method === 'GET') {
-        return of(new HttpResponse({ status: 200, body: this.items.all() }));
+        return of(new HttpResponse({ status: 200, body: this.items.all().map(item => Item.copy(item)) }));
       }
 
       // get item by uuid
@@ -83,13 +83,13 @@ export class MockBackendInterceptor implements HttpInterceptor {
         let uuid = urlParts[urlParts.length - 1];
         let item = this.items.fetch(uuid);
 
-        return of(new HttpResponse({ status: 200, body: item }));
+        return of(new HttpResponse({ status: 200, body: Item.fromObject(item) }));
       }
 
-      // create item
+      // create/update item
       if (request.url.endsWith('/api/items') && request.method === 'PUT') {
         // save new item
-        let item = this.items.save(request.body);
+        let item = this.items.save(Item.fromObject(request.body));
 
         // respond 200 OK
         return of(new HttpResponse({ status: 200, body: item }));
@@ -108,7 +108,7 @@ export class MockBackendInterceptor implements HttpInterceptor {
 
       // get entries
       if (request.url.endsWith('/api/entries') && request.method === 'GET') {
-        return of(new HttpResponse({ status: 200, body: this.entries.all() }));
+        return of(new HttpResponse({ status: 200, body: this.entries.all().map(entry => Entry.copy(entry)) }));
       }
 
       // get entry by uuid
@@ -118,13 +118,13 @@ export class MockBackendInterceptor implements HttpInterceptor {
         let uuid = urlParts[urlParts.length - 1];
         let entry = this.entries.fetch(uuid);
 
-        return of(new HttpResponse({ status: 200, body: entry }));
+        return of(new HttpResponse({ status: 200, body: Entry.copy(entry) }));
       }
 
-      // create entry
+      // create/update entry
       if (request.url.endsWith('/api/entries') && request.method === 'PUT') {
         // save new entry
-        let entry = this.entries.save(request.body);
+        let entry = this.entries.save(Entry.fromObject(request.body));
 
         // respond 200 OK
         return of(new HttpResponse({ status: 200, body: entry }));

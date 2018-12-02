@@ -48,12 +48,16 @@ export class EntryComponent implements OnInit {
         };
       }),
     ).subscribe(data => {
+      // if the subject is null, this component is going to disappear soon 
+      if (data.subject == null) {
+        return
+      }
+
       //update the FE copy and the stored BE copy of this entry
       this.subject = data.subject
       this.storeSubject = data.subject;
 
       if (data.editing) {
-        this.storeSubject = data.subject;
         this.formHours = data.subject.moment.getHours();
         this.formMinutes = data.subject.moment.getMinutes();
         this.gridListAspectRatio = '1:1';
