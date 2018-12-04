@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTableModule } from '@angular/material/table';
 
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from '../environments/environment';
@@ -80,7 +81,8 @@ import { ItemComponent } from './nav-menu/item/item.component';
     MatDatepickerModule, MatNativeDateModule,
     MatAutocompleteModule,
     MatRadioModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTableModule
   ],
   entryComponents: [ItemFormDialog],
   providers: [mockBackendProvider],

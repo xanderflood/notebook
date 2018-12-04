@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
 
 import { ItemProperty } from '../models/item.model'
 
@@ -10,12 +10,17 @@ import { ItemProperty } from '../models/item.model'
 export class ItemPropertiesFormComponent implements OnInit {
 
   private propertiesArray: ItemProperty[] = [];
-  @Input() set properties(properties: ItemProperty[]) {
-    this.propertiesArray = properties;
+  set properties(ary: ItemProperty[]) {
+    this.propertiesArray = ary.slice();
     this.ensureNonempty();
   }
-  get properties(): ItemProperty[] {
-    return this.propertiesArray;
+  @Input() get properties(): ItemProperty[] {
+    console.log("getting", this.propertiesArray.filter(
+      p => (p.name.length > 0) || (p.value.length > 0)).map(
+      p => ItemProperty.copy(p)));
+    return this.propertiesArray.filter(
+      p => (p.name.length > 0) || (p.value.length > 0)).map(
+      p => ItemProperty.copy(p));
   }
 
   constructor() { }
@@ -34,8 +39,7 @@ export class ItemPropertiesFormComponent implements OnInit {
   }
 
   ensureNonempty() {
-    if (this.properties.length == 0)
+    if (this.propertiesArray.length == 0)
       this.propertiesArray.push(new ItemProperty());
   }
-
 }

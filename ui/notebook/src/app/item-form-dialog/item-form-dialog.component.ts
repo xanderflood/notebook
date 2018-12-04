@@ -1,9 +1,8 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 import { AppState, EntryFormState } from '../store/app.state'
-import { getItemFormEditing } from '../store/app.selectors'
 import { ItemFormDialogData } from '../store/app.actions'
 
 @Component({
