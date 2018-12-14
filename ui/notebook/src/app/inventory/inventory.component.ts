@@ -24,12 +24,11 @@ export class InventoryComponent implements OnInit {
   ngOnInit() { }
 
   dispatchEditItem(item: Item) {
-    console.log("editing item");
-    this.store.dispatch(new EditItem(item));
+    // this.store.dispatch(new EditItem(item));
   }
 
   dispatchDeleteItem(item: Item) {
     // TODO prompt
-    // this.store.dispatch(new DeleteItem(item));
+    this.store.dispatch(new DeleteItem(item));
   }
 }

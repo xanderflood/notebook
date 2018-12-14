@@ -5,7 +5,7 @@ import { combineLatest, startWith, tap } from 'rxjs/operators'
 
 import { AppState, EntryFormState } from '../store/app.state'
 import { getEntryFormStateEditing, getEntryFormStateLoading, getEntryFormStateSubject, getEntryFormStateError } from '../store/app.selectors'
-import { EditEntry, CancelEntry, SaveEntry } from '../store/app.actions'
+import { EditEntry, CancelEntry, CreateEntry, UpdateEntry } from '../store/app.actions'
 
 import { Entry } from '../models/entry.model';
 import { Transaction } from '../models/transaction.model';
@@ -24,7 +24,7 @@ export class EntryComponent implements OnInit {
 
   subjectObs: Observable<Entry>;
   subject: Entry;
-  storeSubject: Entry;
+  storedSubject: Entry;
 
   formHours: number;
   formMinutes: number;
@@ -40,29 +40,18 @@ export class EntryComponent implements OnInit {
     .pipe(startWith(false));
     this.subjectObs = this.store.select(getEntryFormStateSubject(this.uuid));
 
-    this.editing.pipe(
-      combineLatest(this.subjectObs, (e, s) => {
-        return {
-          editing: e,
-          subject: s,
-        };
-      }),
+    var eAugmented = this.editing.pipe(startWith(false));
+    this.subjectObs.pipe(
+      combineLatest(eAugmented, (s, e) => ({s: s, e: e})),
     ).subscribe(data => {
-      // if the subject is null, this component is going to disappear soon 
-      if (data.subject == null) {
-        return
-      }
+      this.storedSubject = Entry.copy(data.s);
 
-      //update the FE copy and the stored BE copy of this entry
-      this.subject = data.subject
-      this.storeSubject = data.subject;
-
-      if (data.editing) {
-        this.formHours = data.subject.moment.getHours();
-        this.formMinutes = data.subject.moment.getMinutes();
+      if (data.e) {
+        this.formHours = this.storedSubject.moment.getHours();
+        this.formMinutes = this.storedSubject.moment.getMinutes();
         this.gridListAspectRatio = '1:1';
       } else {
-        this.subject = Entry.copy(this.storeSubject);
+        this.subject = this.storedSubject;
         this.gridListAspectRatio = '3:1';
       }
     });
@@ -83,7 +72,11 @@ export class EntryComponent implements OnInit {
       this.subject.moment.getDate(),
       this.formHours, this.formMinutes);
 
-    this.store.dispatch(new SaveEntry(this.subject));
+
+    this.store.dispatch(
+      this.subject.uuid ?
+      new UpdateEntry(this.subject) :
+      new CreateEntry(this.subject));
   }
 
   delete(transaction: Transaction) {

@@ -1,10 +1,11 @@
 import { Component, ElementRef, ViewChild, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs'
-import { combineLatest, startWith } from 'rxjs/operators'
+import { Observable, Subscriber, Subject, from } from 'rxjs'
+import { startWith } from 'rxjs/operators'
+import { switchMap, tap, share } from 'rxjs/operators'
 
 import { AppState } from '../store/app.state'
-import { getItemsRepository } from '../store/app.selectors'
+import { getItemData } from '../store/app.selectors'
 
 import { Transaction, TransactionType } from '../models/transaction.model';
 import { Item } from '../models/item.model';
@@ -21,8 +22,17 @@ export class TransactionComponent implements OnInit {
   @Input() editMode: boolean;
   @Output() remove: EventEmitter<Transaction> = new EventEmitter<Transaction>();
 
-  uuidObs: Subject<string>;
-  item: Observable<Item>;
+  private itemUUIDSubscriber: Subscriber<string>;
+  itemObs: Observable<Item>;
+  item: Item;
+  @Input() get itemUUID(): string {
+    return this.transaction.itemUUID;
+  }
+  set itemUUID(u: string) {
+    console.log("SETTING")
+    this.transaction.itemUUID = u;
+    this.itemUUIDSubscriber.next(u);
+  }
 
   @ViewChild('itemSelector') itemSelector: ItemSelectorComponent;
 
@@ -33,16 +43,11 @@ export class TransactionComponent implements OnInit {
   constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.uuidObs = new Subject<string>();
-
-    this.item = this.uuidObs.pipe(
-      startWith(null),
-      combineLatest(this.store.select(getItemsRepository),
-        (uuid, repo) => uuid ? repo.fetch(uuid) : null),
-    );
-  }
-
-  changeUUID(uuid: string) {
-    this.uuidObs.next();
+    (Observable.create((subscriber, _) => {
+      this.itemUUIDSubscriber = subscriber;
+    }) as Observable<string>).pipe(
+      startWith(this.transaction.itemUUID),
+      switchMap(uuid => this.store.select(getItemData(uuid))),
+    ).subscribe(item => this.item = item);
   }
 }

@@ -1,13 +1,13 @@
 import { Transaction } from './transaction.model'
 import { UUIDable } from '../store/repository'
 
-export class Entry implements UUIDable {
+export class Entry {
   uuid: string = "";
   constructor(
     public transactions?: Transaction[],
     public moment?: Date,
     uuid?: string,
-   ) {
+  ) {
     this.transactions = transactions ? transactions : [];
     this.moment = moment ? moment : new Date();
     if (uuid) this.uuid = uuid;

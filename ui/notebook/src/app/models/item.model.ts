@@ -13,20 +13,24 @@ export class Item implements UUIDable {
     //TODO keep this, or a separate join table?
     // history: string[] = [];
   ) {
-    this.name = uuid || "";
-    if (uuid) this.uuid = uuid;
+    this.name = name || "";
+    this.uuid = uuid || "";
     this.numProduced = numProduced || 0;
     this.numRemaining = numRemaining || 0;
-    this.properties = properties ? properties.map(p => ItemProperty.fromObject(p)) : [];
+    this.properties = properties || [];
+  }
+
+  copy(): UUIDable {
+    return Item.fromObject(this);
   }
 
   static fromObject(o: any): Item {
     return new Item(
-      o.uuid,
       o.name,
+      o.uuid,
       o.numProduced,
       o.numRemaining,
-      o.properties);
+      o.properties.map(p => ItemProperty.fromObject(p)));
   }
 
   static copy(item: Item): Item {
@@ -43,7 +47,11 @@ export class ItemProperty {
     this.value = this.value || "";
   }
 
-  static fromObject(o): ItemProperty {
-    return new ItemProperty(o.name, o.value);
+  static fromObject(p): ItemProperty {
+    return new ItemProperty(p.name, p.value);
+  }
+
+  static copy(ps: ItemProperty): ItemProperty {
+    return ItemProperty.fromObject(ps);
   }
 }

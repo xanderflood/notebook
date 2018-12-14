@@ -13,8 +13,7 @@ const httpOptions = {
 export class ItemService {
   private itemsURL = '/api/items';
 
-  constructor(
-    private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   private log(message: string) {
     console.log(`ItemService: ${message}`);
@@ -24,22 +23,7 @@ export class ItemService {
     return this.http.get<Item[]>(this.itemsURL)
       .pipe(
         map(items => items.map(item => Item.fromObject(item))),
-        tap(() => this.log('fetched items')),
         catchError(this.handleError('getItems', []))
-      );
-  }
-
-  /** GET item by uuid. Return `undefined` when uuid not found */
-  getItemNo404<Data>(uuid: string): Observable<Item> {
-    const url = `${this.itemsURL}/?uuid=${uuid}`;
-    return this.http.get<Item[]>(url)
-      .pipe(
-        map(items => Item.fromObject(items[0])), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} item uuid=${uuid}`);
-        }),
-        catchError(this.handleError<Item>(`getItem uuid=${uuid}`))
       );
   }
 
@@ -48,20 +32,25 @@ export class ItemService {
     const url = `${this.itemsURL}/${uuid}`;
     return this.http.get<Item>(url).pipe(
       map(item => Item.fromObject(item)), // returns a {0|1} element array
-      tap(() => this.log(`fetched item uuid=${uuid}`)),
       catchError(this.handleError<Item>(`getItem uuid=${uuid}`))
     );
   }
 
   //////// Save methods //////////
 
-  /** POST: upsert an item to the server,
-    depending on whether the item has a uuid*/
-  saveItem(item: Item): Observable<Item> {
-    return this.http.put<Item>(this.itemsURL, item, httpOptions).pipe(
+  /** POST: create a new item */
+  createItem(item: Item): Observable<Item> {
+    return this.http.post<Item>(this.itemsURL, item, httpOptions).pipe(
       map(item => Item.fromObject(item)),
-      tap(_ => this.log(`updated item uuid=${item.uuid}`)),
-      catchError(this.handleError<Item>('updateEntry'))
+      catchError(this.handleError<Item>('createItem'))
+    );
+  }
+
+  /** PATCH: update an existing item */
+  updateItem(item: Item): Observable<Item> {
+    return this.http.patch<Item>(this.itemsURL, item, httpOptions).pipe(
+      map(item => Item.fromObject(item)),
+      catchError(this.handleError<Item>('updateItem'))
     );
   }
 
@@ -72,7 +61,6 @@ export class ItemService {
 
     return this.http.delete<Item>(url, httpOptions).pipe(
       map(item => Item.fromObject(item)), // returns a {0|1} element array
-      tap(_ => this.log(`deleted item uuid=${uuid}`)),
       catchError(this.handleError<Item>('deleteItem'))
     );
   }
@@ -87,14 +75,12 @@ export class ItemService {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.log("logging");
       console.error(error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
-      console.log("throwing");
       throw(error);
       // return of(result as T);
     };

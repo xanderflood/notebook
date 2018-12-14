@@ -7,7 +7,7 @@
       </mat-icon>
     </div>
     <mat-card-title>
-      <p>{{ transaction.type }} {{ transaction.count }} of {{ (item | async)?.name }}</p>
+      <p>{{ transaction.type }} {{ transaction.count }} of {{ item?.name }}</p>
     </mat-card-title>
   </mat-card-header>
 
@@ -26,14 +26,14 @@
       </mat-radio-group>
 
       <div>
-        <app-item-selector #itemSelector style="width: 100%;" [uuid]="transaction.itemUUID" (uuidChange)="changeUUID($event)" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
+        <app-item-selector #itemSelector style="width: 100%;" [uuid]="itemUUID" (uuidChange)="itemUUID = $event" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
       </div>
 
       <div style="background-color: #EEEEEE;">
         <input matInput type="number" [(ngModel)]="transaction.count"/>
       </div>
 
-      <app-item-properties [properties]="(item | async)?.properties"></app-item-properties>
+      <app-item-properties [properties]="item?.properties"></app-item-properties>
 
       <mat-card-actions>
         <button mat-button (click)="remove.emit(transaction)">Remove</button>

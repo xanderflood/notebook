@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { ItemPropertiesFormComponent } from '../item-properties-form/item-properties-form.component';
 
 import { AppState } from '../store/app.state'
-import { CancelItem, SaveItem } from '../store/app.actions'
+import { CancelItem, CreateItem, UpdateItem } from '../store/app.actions'
 import { Item, ItemProperty } from '../models/item.model';
 
 @Component({
@@ -18,7 +18,7 @@ export class ItemFormComponent implements OnInit {
   propertiesForm: ItemPropertiesFormComponent;
 
   @Output()
-  done = new EventEmitter();
+  done = new EventEmitter<void>();
 
   @Input()
   name: string;
@@ -46,6 +46,8 @@ export class ItemFormComponent implements OnInit {
 
     this.item.name = name;
     this.item.properties = this.propertiesForm.properties;
-    this.store.dispatch(new SaveItem(this.item));
+    this.store.dispatch(this.item.uuid ?
+      new CreateItem(this.item, this.done.emit) :
+      new UpdateItem(this.item, this.done.emit));
   }
 }

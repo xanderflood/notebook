@@ -14,31 +14,33 @@ import { MockDB } from './db.mock';
 @Injectable()
 export class MockBackendInterceptor implements HttpInterceptor {
 
-  private boroDish = new Item("borosilicate dish, 60mm", "item-0", 10, 5);
-  private pp5Dish = new Item("PP5 dish, 45mm", "item-1", 10, 6);
-  private hwfpJar = new Item("HWFP jar, 1 qt", "item-2", 10, 8, [
-    new ItemProperty("createdat", "02/13/4392 32:21:64"),
-  ]);
-  private no17LC = new Item("item-3", "#17 LC", 10, 6);
-  private no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", 72, 12);
-  private itemsArray = [this.boroDish, this.pp5Dish, this.hwfpJar, this.no17LC, this.no17HWFP];
+  private items: MockDB<Item>;
+  private entries: MockDB<Entry>;
 
-  private entriesArray = [
-    new Entry([
-      new Transaction(this.hwfpJar.uuid, TransactionType.Consumed, 10),
-      new Transaction(this.no17LC.uuid, TransactionType.Consumed, 1),
-      new Transaction(this.no17HWFP.uuid, TransactionType.Produced, 10),
-    ], new Date, "entry1"),
-    new Entry([
-      new Transaction(this.boroDish.uuid, TransactionType.Produced, 40),
-      new Transaction(this.pp5Dish.uuid, TransactionType.Produced, 40)
-    ], new Date, "entry2")
-  ];
+  constructor() {
+    var boroDish = new Item("borosilicate dish, 60mm", "item-0", 10, 5);
+    var pp5Dish = new Item("PP5 dish, 45mm", "item-1", 10, 6);
+    var hwfpJar = new Item("HWFP jar, 1 qt", "item-2", 10, 8, [
+      new ItemProperty("createdat", "02/13/4392 32:21:64"),
+    ]);
+    var no17LC = new Item("item-3", "#17 LC", 10, 6);
+    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", 72, 12);
 
-  private items: MockDB<Item> = new MockDB<Item>(this.itemsArray);
-  private entries: MockDB<Entry> = new MockDB<Entry>(this.entriesArray);
+    this.items = new MockDB<Item>([boroDish, pp5Dish, hwfpJar, no17LC, no17HWFP]);
 
-  constructor() { }
+
+    this.entries = new MockDB<Entry>([
+      new Entry([
+        new Transaction(hwfpJar.uuid, TransactionType.Consumed, 10),
+        new Transaction(no17LC.uuid, TransactionType.Consumed, 1),
+        new Transaction(no17HWFP.uuid, TransactionType.Produced, 10),
+      ], new Date, "entry1"),
+      new Entry([
+        new Transaction(boroDish.uuid, TransactionType.Produced, 40),
+        new Transaction(pp5Dish.uuid, TransactionType.Produced, 40)
+      ], new Date, "entry2")
+    ]);
+  }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // array in local storage for registered items
@@ -86,10 +88,19 @@ export class MockBackendInterceptor implements HttpInterceptor {
         return of(new HttpResponse({ status: 200, body: Item.fromObject(item) }));
       }
 
-      // create/update item
-      if (request.url.endsWith('/api/items') && request.method === 'PUT') {
+      // create
+      if (request.url.endsWith('/api/items') && request.method === 'POST') {
         // save new item
-        let item = this.items.save(Item.fromObject(request.body));
+        let item = this.items.insert(Item.fromObject(request.body));
+
+        // respond 200 OK
+        return of(new HttpResponse({ status: 200, body: item }));
+      }
+
+      // update
+      if (request.url.endsWith('/api/items') && request.method === 'PATCH') {
+        // save new item
+        let item = this.items.update(Item.fromObject(request.body));
 
         // respond 200 OK
         return of(new HttpResponse({ status: 200, body: item }));
@@ -121,10 +132,19 @@ export class MockBackendInterceptor implements HttpInterceptor {
         return of(new HttpResponse({ status: 200, body: Entry.copy(entry) }));
       }
 
-      // create/update entry
-      if (request.url.endsWith('/api/entries') && request.method === 'PUT') {
+      // create entry
+      if (request.url.endsWith('/api/entries') && request.method === 'POST') {
         // save new entry
-        let entry = this.entries.save(Entry.fromObject(request.body));
+        let entry = this.entries.insert(Entry.fromObject(request.body));
+
+        // respond 200 OK
+        return of(new HttpResponse({ status: 200, body: entry }));
+      }
+
+      // update entry
+      if (request.url.endsWith('/api/entries') && request.method === 'PATCH') {
+        // save new entry
+        let entry = this.entries.update(Entry.fromObject(request.body));
 
         // respond 200 OK
         return of(new HttpResponse({ status: 200, body: entry }));

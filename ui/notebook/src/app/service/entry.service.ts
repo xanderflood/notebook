@@ -13,8 +13,7 @@ const httpOptions = {
 export class EntryService {
   private entriesURL = '/api/entries';
 
-  constructor(
-    private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   private log(message: string) {
     console.log(`EntryService: ${message}`);
@@ -24,23 +23,7 @@ export class EntryService {
     return this.http.get<Entry[]>(this.entriesURL)
       .pipe(
         map(entries => entries.map(entry => Entry.fromObject(entry))),
-        tap(() => this.log('fetched entries')),
-        tap(entries => console.log('fetched:', entries)),
         catchError(this.handleError('getEntries', [])),
-      );
-  }
-
-  /** GET entry by uuid. Return `undefined` when uuid not found */
-  getEntryNo404<Data>(uuid: string): Observable<Entry> {
-    const url = `${this.entriesURL}/?uuid=${uuid}`;
-    return this.http.get<Entry[]>(url)
-      .pipe(
-        map(entries => Entry.fromObject(entries[0])), // returns a {0|1} element array
-        tap(h => {
-          const outcome = h ? `fetched` : `did not find`;
-          this.log(`${outcome} entry uuid=${uuid}`);
-        }),
-        catchError(this.handleError<Entry>(`getEntry uuid=${uuid}`))
       );
   }
 
@@ -49,19 +32,24 @@ export class EntryService {
     const url = `${this.entriesURL}/${uuid}`;
     return this.http.get<Entry>(url).pipe(
       map(entry => Entry.fromObject(entry)),
-      tap(() => this.log(`fetched entry uuid=${uuid}`)),
       catchError(this.handleError<Entry>(`getEntry uuid=${uuid}`))
     );
   }
 
   //////// Save methods //////////
 
-  /** POST: upsert an entry to the server,
-    depending on whether the entry has a uuid */
-  saveEntry(entry: Entry): Observable<Entry> {
-    return this.http.put<Entry>(this.entriesURL, entry, httpOptions).pipe(
+  /** POST: create a new entry */
+  createEntry(entry: Entry): Observable<Entry> {
+    return this.http.post<Entry>(this.entriesURL, entry, httpOptions).pipe(
       map(entry => Entry.fromObject(entry)),
-      tap(_ => this.log(`updated entry uuid=${entry.uuid}`)),
+      catchError(this.handleError<Entry>('createEntry'))
+    );
+  }
+
+  /** POST: update an existing entry */
+  updateEntry(entry: Entry): Observable<Entry> {
+    return this.http.patch<Entry>(this.entriesURL, entry, httpOptions).pipe(
+      map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>('updateEntry'))
     );
   }
@@ -73,7 +61,6 @@ export class EntryService {
 
     return this.http.delete<Entry>(url, httpOptions).pipe(
       map(entry => Entry.fromObject(entry)),
-      tap(_ => this.log(`deleted entry uuid=${uuid}`)),
       catchError(this.handleError<Entry>('deleteEntry'))
     );
   }
