@@ -2,8 +2,8 @@ import { Component, EventEmitter, OnInit, Input, Output, ViewChild, ElementRef }
 import { Store } from '@ngrx/store';
 import { FormControl } from '@angular/forms';
 
-import { Observable, Subject } from 'rxjs';
-import { startWith, combineLatest, tap } from 'rxjs/operators';
+import { Observable, Subject, Subscriber } from 'rxjs';
+import { startWith, combineLatest, tap, share } from 'rxjs/operators';
 
 import { AppState } from '../store/app.state'
 import { NewItem } from '../store/app.actions'
@@ -20,19 +20,20 @@ import { Item } from '../models/item.model';
 export class ItemSelectorComponent implements OnInit {
   @Input() allowNew;
 
-  uuidValue: string | null = null;
-  @Input() get uuid(): string | null { return this.uuidValue; }
-  @Output() uuidChange = new EventEmitter<string | null>();
-  uuidSubject = new Subject<string | null>();
-  set uuid(uuid: string | null) {
-    this.uuidValue = uuid;
-    this.uuidChange.emit(this.uuidValue);
-    this.uuidSubject.next(this.uuidValue);
-  };
+  uuidObs: Observable<string>;
+  selectedItem: Item;
+  uuidVal: string;
+  @Output() uuidChange: EventEmitter<string> = new EventEmitter<string>();
+  @Input() get uuid(): string {
+    return this.uuidVal;
+  }
+  set uuid(u: string) {
+    this.uuidVal = u;
+    this.uuidChange.emit(u);
+  }
 
   itemsRepository: Observable<Repository<Item>> = this.store.select(getItemsRepository);
-  filteredItems: Observable<Item[]>;
-  selectedItem: Item;
+  filteredItems: Item[];
 
   @ViewChild('querybox') queryBox: ElementRef;
   queryCtrl = new FormControl();
@@ -41,16 +42,28 @@ export class ItemSelectorComponent implements OnInit {
   constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.uuidSubject.pipe(
-      startWith(null),
+    var uuidSubscriber: Subscriber<string>;
+    this.uuidObs = (Observable.create((subscriber, _) => {
+      uuidSubscriber = subscriber;
+    }) as Observable<string>).pipe(
+      startWith(this.uuid),
+      share(),
+    );
+    this.uuidChange.subscribe(u => uuidSubscriber.next(u));
+
+    this.uuidObs.pipe(
       combineLatest(this.itemsRepository, (uuid, repo) => uuid ? repo.fetch(uuid) : null),
     ).subscribe(item => this.selectedItem = item);
 
-    this.filteredItems = this.queryCtrl.valueChanges.pipe(
+    var textObs = this.queryCtrl.valueChanges.pipe(
       startWith(""),
+      share(),
+    );
+
+    textObs.pipe(
       tap(value => { if (this.storingText) this.textOnNewClick = value; }),
       combineLatest(this.itemsRepository, this.filterItems),
-    );
+    ).subscribe(items => this.filteredItems = items);
   }
 
   optionSelected($event: any): void {
@@ -87,10 +100,6 @@ export class ItemSelectorComponent implements OnInit {
 
   overlayIsVisible(): boolean {
     return (this.queryBox.nativeElement !== this.queryBox.nativeElement.ownerDocument.activeElement)
-      && this.itemSelected();
-  }
-
-  itemSelected(): boolean {
-    return !!this.selectedItem;
+      && !!this.uuidVal;
   }
 }
