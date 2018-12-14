@@ -74,7 +74,14 @@ export class ItemsData {
 }
 
 export class EntryFormState implements UUIDable {
-  uuid: string;
+  //
+  // //
+  // // // in repository
+  // //
+  //
+  // uuid: string;
+  get uuid(): string { return this.subject.uuid; }
+  set uuid(u: string) { this.subject.uuid = u; }
   constructor(
     public subject?: Entry,
     public editing?: boolean,
@@ -86,9 +93,16 @@ export class EntryFormState implements UUIDable {
     this.editing = this.editing || false;
     this.loading = this.loading || false;
     this.error = this.error || null;
+    this.uuid = this.uuid || "";
+  }
 
-    if (uuid) this.uuid = uuid;
-    this.uuid = this.uuid || (this.subject ? this.subject.uuid : "");
+  copy(): UUIDable {
+    return new EntryFormState(
+      this.subject,
+      this.editing,
+      this.loading,
+      this.error,
+      this.uuid);
   }
 
   static default() {
@@ -98,18 +112,14 @@ export class EntryFormState implements UUIDable {
 
 export class ItemFormState {
   constructor(
-    public subject?: Item,
-    public editing?: boolean,
     public loading?: boolean,
     public error?: string,
   ) {
-    this.subject = this.subject || null;
-    this.editing = this.editing || false;
     this.loading = this.loading || false;
     this.error = this.error || null;
   }
 
   static default() {
-    return new ItemFormState(null, false);
+    return new ItemFormState();
   }
 }

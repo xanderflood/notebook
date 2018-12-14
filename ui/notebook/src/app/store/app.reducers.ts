@@ -9,7 +9,7 @@ import { Repository } from './repository';
 const defaultState: EntriesAndItemsManager = AppState.default().app;
 
 export function AppReducer(state = defaultState, action: AppActions.AppAction) {
-  console.log("reducing", state, action);
+  // console.log("reducing", state, action);
 
   switch (action.type) {
     /////////////////
@@ -30,7 +30,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         entries: {
           ...state.entries,
           loading: false,
-          repository: new Repository<Entry>(
+          repository: new Repository<EntryFormState>(
             action.entries.map(entry => new EntryFormState(entry))),
         },
       }
@@ -77,10 +77,10 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
       }
     }
 
-    ////////////////
-    // save entry //
-    ////////////////
-    case AppActions.SAVE_ENTRY: {
+    //////////////////
+    // create entry //
+    //////////////////
+    case AppActions.CREATE_ENTRY: {
       return {
         ...state,
         entries: {
@@ -91,7 +91,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         }
       };
     }
-    case AppActions.SAVE_ENTRY_SUCCESS: {
+    case AppActions.CREATE_ENTRY_SUCCESS: {
       return {
         ...state,
         entries: {
@@ -104,7 +104,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         }
       };
     }
-    case AppActions.SAVE_ENTRY_ERROR: {
+    case AppActions.CREATE_ENTRY_ERROR: {
       return {
         ...state,
         entries: {
@@ -116,10 +116,49 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
       };
     }
 
-    ///////////////
-    // save item //
-    ///////////////
-    case AppActions.SAVE_ITEM: {
+    //////////////////
+    // update entry //
+    //////////////////
+    case AppActions.UPDATE_ENTRY: {
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: true,
+          }),
+        }
+      };
+    }
+    case AppActions.UPDATE_ENTRY_SUCCESS: {
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.uuid, {
+            subject: action.entry,
+            loading: false,
+            editing: false,
+          }),
+        }
+      };
+    }
+    case AppActions.UPDATE_ENTRY_ERROR: {
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          repository: state.entries.repository.update(action.entry.uuid, {
+            loading: false,
+          }),
+        }
+      };
+    }
+
+    /////////////////
+    // create item //
+    /////////////////
+    case AppActions.CREATE_ITEM: {
       return {
         ...state,
         itemForm: {
@@ -128,7 +167,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         },
       };
     }
-    case AppActions.SAVE_ITEM_SUCCESS: {
+    case AppActions.CREATE_ITEM_SUCCESS: {
       return {
         ...state,
         itemForm: {
@@ -141,7 +180,42 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         },
       };
     }
-    case AppActions.SAVE_ITEM_ERROR: {
+    case AppActions.CREATE_ITEM_ERROR: {
+      return {
+        ...state,
+        itemForm: {
+          ...state.itemForm,
+          loading: false,
+        },
+      };
+    }
+
+    /////////////////
+    // update item //
+    /////////////////
+    case AppActions.UPDATE_ITEM: {
+      return {
+        ...state,
+        itemForm: {
+          ...state.itemForm,
+          loading: true,
+        },
+      };
+    }
+    case AppActions.UPDATE_ITEM_SUCCESS: {
+      return {
+        ...state,
+        itemForm: {
+          ...state.itemForm,
+          loading: false,
+        },
+        items: {
+          ...state.items,
+          repository: state.items.repository.save(action.item),
+        },
+      };
+    }
+    case AppActions.UPDATE_ITEM_ERROR: {
       return {
         ...state,
         itemForm: {
@@ -291,7 +365,6 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         itemForm: {
           ...state.itemForm,
           subject: new Item(),
-          editing: true,
         },
       };
     }
@@ -301,18 +374,11 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         itemForm: {
           ...state.itemForm,
           subject: action.item,
-          editing: false,
         },
       };
     }
     case AppActions.CANCEL_ITEM: {
-      return {
-        ...state,
-        itemForm: {
-          ...state.itemForm,
-          editing: false,
-        },
-      };
+      return state;
     }
 
     default:

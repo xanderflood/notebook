@@ -1,5 +1,6 @@
 export interface UUIDable {
   uuid: string;
+  copy(): UUIDable;
 }
 
 export class Repository<T extends UUIDable> {
@@ -29,12 +30,9 @@ export class Repository<T extends UUIDable> {
     var index = this.findIndex(uuid);
 
     if (index < 0) {
-      //if this method is used to insert something new, then update had
-      //better be a genuine and complete T object
       return this.push(update as T)
     } else {
-      var obj = {};
-      Object.assign(obj, this.array[index]);
+      var obj = this.array[index].copy();
       Object.assign(obj, update);
       return this.replaceIndex(index, obj as T);
     }

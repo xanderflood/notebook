@@ -80,14 +80,6 @@ export const getItemFormState = createSelector(
   getDataState,
   state => state.itemForm,
 );
-export const getItemFormSubject = createSelector(
-  getItemFormState,
-  state => state.subject,
-);
-export const getItemFormEditing = createSelector(
-  getItemFormState,
-  state => state.editing,
-);
 export const getItemFormLoading = createSelector(
   getItemFormState,
   state => state.loading,

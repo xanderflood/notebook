@@ -53,23 +53,47 @@ export class AppEffects {
       );
 
   // SAVE //
-  @Effect() SaveEntry: Observable<Action> =
-    this.actions$.ofType<AppActions.SaveEntry>(AppActions.SAVE_ENTRY)
+  @Effect() CreateEntry: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateEntry>(AppActions.CREATE_ENTRY)
       .pipe(
         mergeMap(action =>
-          this.entryService.saveEntry(action.entry).pipe(
-            map(entry => new AppActions.SaveEntrySuccess(action.entry.uuid, entry)),
-            catchError(() => of(new AppActions.SaveEntryError(action.entry, "Failed to save entry."))),
+          this.entryService.createEntry(action.entry).pipe(
+            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
+            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to create entry."))),
           )
         ),
       );
-  @Effect() SaveItem: Observable<Action> =
-    this.actions$.ofType<AppActions.SaveItem>(AppActions.SAVE_ITEM)
+  @Effect() CreateItem: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateItem>(AppActions.CREATE_ITEM)
       .pipe(
         mergeMap(action =>
-          this.itemService.saveItem(action.item).pipe(
-            map(item => new AppActions.SaveItemSuccess(item)),
-            catchError(() => of(new AppActions.SaveItemError(action.item, "Failed to save item."))),
+          this.itemService.createItem(action.item).pipe(
+            tap(action.closeHook), // close the dialog
+            map(item => new AppActions.CreateItemSuccess(item)),
+            catchError(() => of(new AppActions.CreateItemError(action.item, "Failed to create item."))),
+          )
+        ),
+      );
+
+  // UPDATE //
+  @Effect() UpdateEntry: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateEntry>(AppActions.UPDATE_ENTRY)
+      .pipe(
+        mergeMap(action =>
+          this.entryService.updateEntry(action.entry).pipe(
+            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
+            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to update entry."))),
+          )
+        ),
+      );
+  @Effect() UpdateItem: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateItem>(AppActions.UPDATE_ITEM)
+      .pipe(
+        mergeMap(action =>
+          this.itemService.updateItem(action.item).pipe(
+            tap(action.closeHook), // close the dialog
+            map(item => new AppActions.UpdateItemSuccess(item)),
+            catchError(() => of(new AppActions.UpdateItemError(action.item, "Failed to update item."))),
           )
         ),
       );
@@ -78,36 +102,26 @@ export class AppEffects {
   @Effect() NewItem: Observable<Action> =
     this.actions$.ofType<AppActions.NewItem>(AppActions.NEW_ITEM)
       .pipe(
-        mergeMap(action => {
-          return this.itemFormDialog.open(ItemFormDialog,
-            {
-              width: '50vw',
-              maxWidth: '400px',
-              minWidth: '350px',
-              data: action.toItemFormDialogData(),
-            })
-            .afterClosed().pipe(
-              map(result => result ? new AppActions.SaveItem(result)
-                : new AppActions.CancelItem),
-            );
-        }),
+        mergeMap(action => [new AppActions.DisplayItemFormDialog(
+          new AppActions.ItemFormDialogData(action.text))]),
       );
   @Effect() EditItem: Observable<Action> =
     this.actions$.ofType<AppActions.EditItem>(AppActions.EDIT_ITEM)
       .pipe(
-        mergeMap(action => {
-          return this.itemFormDialog.open(ItemFormDialog,
+        mergeMap(action =>[new AppActions.DisplayItemFormDialog(
+          new AppActions.ItemFormDialogData("", action.item))]),
+      );
+  @Effect() DisplayItemFormDialog: Observable<Action> =
+    this.actions$.ofType<AppActions.DisplayItemFormDialog>(AppActions.DISPLAY_ITEM_FORM_DIALOG)
+      .pipe<AppActions.DisplayItemFormDialog>(
+        tap(action => this.itemFormDialog.open(ItemFormDialog,
             {
               width: '50vw',
               maxWidth: '400px',
               minWidth: '350px',
-              data: action.toItemFormDialogData(),
+              data: action.data,
             })
-            .afterClosed().pipe(
-              map(result => result ? new AppActions.SaveItem(result)
-                : new AppActions.CancelItem),
-            );
-        }),
+          ),
       );
 
   // DELETE //

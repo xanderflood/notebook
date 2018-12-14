@@ -13,13 +13,25 @@ export const GET_ITEMS = '[App] GET_ITEMS';
 export const GET_ITEMS_SUCCESS = "[App] GET_ITEMS_SUCCESS";
 export const GET_ITEMS_ERROR = "[App] GET_ITEMS_ERROR";
 
-export const SAVE_ENTRY = '[App] SAVE_ENTRY';
-export const SAVE_ENTRY_SUCCESS = "[App] SAVE_ENTRY_SUCCESS";
-export const SAVE_ENTRY_ERROR = "[App] SAVE_ENTRY_ERROR";
+export const CREATE_ENTRY = '[App] CREATE_ENTRY';
+export const CREATE_ENTRY_SUCCESS = "[App] CREATE_ENTRY_SUCCESS";
+export const CREATE_ENTRY_ERROR = "[App] CREATE_ENTRY_ERROR";
+
+export const UPDATE_ENTRY = '[App] UPDATE_ENTRY';
+export const UPDATE_ENTRY_SUCCESS = "[App] UPDATE_ENTRY_SUCCESS";
+export const UPDATE_ENTRY_ERROR = "[App] UPDATE_ENTRY_ERROR";
 
 export const SAVE_ITEM = '[App] SAVE_ITEM';
 export const SAVE_ITEM_SUCCESS = "[App] SAVE_ITEM_SUCCESS";
 export const SAVE_ITEM_ERROR = "[App] SAVE_ITEM_ERROR";
+
+export const CREATE_ITEM = '[App] CREATE_ITEM';
+export const CREATE_ITEM_SUCCESS = "[App] CREATE_ITEM_SUCCESS";
+export const CREATE_ITEM_ERROR = "[App] CREATE_ITEM_ERROR";
+
+export const UPDATE_ITEM = '[App] UPDATE_ITEM';
+export const UPDATE_ITEM_SUCCESS = "[App] UPDATE_ITEM_SUCCESS";
+export const UPDATE_ITEM_ERROR = "[App] UPDATE_ITEM_ERROR";
 
 export const DELETE_ENTRY = '[App] DELETE_ENTRY';
 export const DELETE_ENTRY_SUCCESS = "[App] DELETE_ENTRY_SUCCESS";
@@ -37,6 +49,7 @@ export const CANCEL_ENTRY = '[App] CANCEL_ENTRY';
 export const NEW_ITEM = '[App] NEW_ITEM';
 export const EDIT_ITEM = '[App] EDIT_ITEM';
 export const CANCEL_ITEM = '[App] CANCEL_ITEM';
+export const DISPLAY_ITEM_FORM_DIALOG = '[App] DISPLAY_ITEM_FORM_DIALOG';
 
 export class ItemFormDialogData {
   constructor(
@@ -74,33 +87,63 @@ export class GetItemsError implements Action {
   constructor(public error: string) { }
 }
 
-// save an entry. if entry.uuid is set, update. otherwise, create
-export class SaveEntry implements Action {
-  readonly type = SAVE_ENTRY;
+// create an entry
+export class CreateEntry implements Action {
+  readonly type = CREATE_ENTRY;
   constructor(public entry: Entry) { }
 }
-export class SaveEntrySuccess implements Action {
-  readonly type = SAVE_ENTRY_SUCCESS;
+export class CreateEntrySuccess implements Action {
+  readonly type = CREATE_ENTRY_SUCCESS;
   // the uuid of the EntryForm to be updated may not match the entry.
   // e.g. for a new entry, uuid="", but entry has a uuid now.
   constructor(public uuid: string, public entry: Entry) { }
 }
-export class SaveEntryError implements Action {
-  readonly type = SAVE_ENTRY_ERROR;
+export class CreateEntryError implements Action {
+  readonly type = CREATE_ENTRY_ERROR;
   constructor(public entry: Entry, public error: string) { }
 }
 
-// save an item. if item.uuid is set, update. otherwise, create
-export class SaveItem implements Action {
-  readonly type = SAVE_ITEM;
+// save an entry
+export class UpdateEntry implements Action {
+  readonly type = UPDATE_ENTRY;
+  constructor(public entry: Entry) { }
+}
+export class UpdateEntrySuccess implements Action {
+  readonly type = UPDATE_ENTRY_SUCCESS;
+  // the uuid of the EntryForm to be updated may not match the entry.
+  // e.g. for a new entry, uuid="", but entry has a uuid now.
+  constructor(public uuid: string, public entry: Entry) { }
+}
+export class UpdateEntryError implements Action {
+  readonly type = UPDATE_ENTRY_ERROR;
+  constructor(public entry: Entry, public error: string) { }
+}
+
+// create an item
+export class CreateItem implements Action {
+  readonly type = CREATE_ITEM;
+  constructor(public item: Item, public closeHook: () => void) { }
+}
+export class CreateItemSuccess implements Action {
+  readonly type = CREATE_ITEM_SUCCESS;
   constructor(public item: Item) { }
 }
-export class SaveItemSuccess implements Action {
-  readonly type = SAVE_ITEM_SUCCESS;
+export class CreateItemError implements Action {
+  readonly type = CREATE_ITEM_ERROR;
+  constructor(public item: Item, public error: string) { }
+}
+
+// update an item
+export class UpdateItem implements Action {
+  readonly type = UPDATE_ITEM;
+  constructor(public item: Item, public closeHook: () => void) { }
+}
+export class UpdateItemSuccess implements Action {
+  readonly type = UPDATE_ITEM_SUCCESS;
   constructor(public item: Item) { }
 }
-export class SaveItemError implements Action {
-  readonly type = SAVE_ITEM_ERROR;
+export class UpdateItemError implements Action {
+  readonly type = UPDATE_ITEM_ERROR;
   constructor(public item: Item, public error: string) { }
 }
 
@@ -147,20 +190,25 @@ export class CancelEntry implements Action {
   constructor(public entry: Entry) { }
 }
 // start editing a new item
-export class NewItem implements Action, ItemFormDialogable {
+export class NewItem implements Action {
   readonly type = NEW_ITEM;
   constructor(public text: string) { }
   toItemFormDialogData(): ItemFormDialogData {
     return new ItemFormDialogData(this.text);
   };
 }
-// stop editing a new item
-export class EditItem implements Action, ItemFormDialogable {
+// start editing a new item
+export class EditItem implements Action {
   readonly type = EDIT_ITEM;
-  constructor(public text: string, public item?: Item) { }
+  constructor(public item: Item) { }
   toItemFormDialogData(): ItemFormDialogData {
-    return new ItemFormDialogData(this.text, this.item);
+    return new ItemFormDialogData("", this.item);
   };
+}
+// open the item form dialog
+export class DisplayItemFormDialog implements Action {
+  readonly type = DISPLAY_ITEM_FORM_DIALOG;
+  constructor(public data: ItemFormDialogData) { }
 }
 // stop editing a new item
 export class CancelItem implements Action {
@@ -168,7 +216,8 @@ export class CancelItem implements Action {
 }
 
 export type AppAction = GetEntries | GetEntriesSuccess | GetEntriesError | GetItems |
-  GetItemsSuccess | GetItemsError | SaveEntry | SaveEntrySuccess | SaveEntryError |
-  SaveItem | SaveItemSuccess | SaveItemError | DeleteEntry | DeleteEntrySuccess |
-  DeleteEntryError | DeleteItem | DeleteItemSuccess | DeleteItemError | NewEntry |
-  EditEntry | CancelEntry | NewItem | EditItem | CancelItem;
+  GetItemsSuccess | GetItemsError | CreateEntry | CreateEntrySuccess | CreateEntryError |
+  UpdateEntry | UpdateEntrySuccess | UpdateEntryError | CreateItem | CreateItemSuccess |
+  CreateItemError | UpdateItem | UpdateItemSuccess | UpdateItemError | DeleteEntry |
+  DeleteEntrySuccess | DeleteEntryError | DeleteItem | DeleteItemSuccess | DeleteItemError |
+  NewEntry | EditEntry | CancelEntry | NewItem | EditItem | CancelItem | DisplayItemFormDialog;
