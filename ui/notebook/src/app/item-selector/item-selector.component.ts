@@ -6,11 +6,12 @@ import { Observable, Subject, Subscriber } from 'rxjs';
 import { startWith, combineLatest, tap, share } from 'rxjs/operators';
 
 import { AppState } from '../store/app.state'
-import { NewItem } from '../store/app.actions'
 import { getItemsRepository } from '../store/app.selectors'
 import { Repository } from '../store/repository';
 
 import { Item } from '../models/item.model';
+import { ItemFormRef } from '../item-form/item-form-ref'
+import { ItemFormDialogData } from '../item-form-dialog/item-form-dialog.component'
 
 @Component({
   selector: 'app-item-selector',
@@ -39,7 +40,10 @@ export class ItemSelectorComponent implements OnInit {
   queryCtrl = new FormControl();
   uuidCtrl = new FormControl();
 
-  constructor(private store: Store<AppState>) { }
+  constructor(
+    private store: Store<AppState>,
+    private itemFormRef: ItemFormRef,
+  ) { }
 
   ngOnInit() {
     var uuidSubscriber: Subscriber<string>;
@@ -70,8 +74,8 @@ export class ItemSelectorComponent implements OnInit {
     if ($event.option.value) {
       this.uuid = $event.option.value.uuid;
     } else {
-      this.store.dispatch(new NewItem(this.textOnNewClick));
-      this.startStoringText()
+      this.itemFormRef.showDialog(new ItemFormDialogData(this.textOnNewClick));
+      this.startStoringText();
     }
   }
 

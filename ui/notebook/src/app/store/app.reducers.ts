@@ -186,6 +186,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         itemForm: {
           ...state.itemForm,
           loading: false,
+          error: action.error,
         },
       };
     }
@@ -221,6 +222,7 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
         itemForm: {
           ...state.itemForm,
           loading: false,
+          error: action.error,
         },
       };
     }
@@ -278,7 +280,6 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
     case AppActions.DELETE_ITEM_SUCCESS: {
       //TODO temporarily replace with delete marker
       // remove it a second later
-
 
       return {
         ...state,
@@ -347,36 +348,11 @@ export function AppReducer(state = defaultState, action: AppActions.AppAction) {
           }
         };
       }
-      // return {
-      //   ...state,
-      //   entries: {
-      //     ...state.entries,
-      //     repository: state.entries.repository.delete(""),
-      //   }
-      // };
     }
 
     //////////////
     // new item //
     //////////////
-    case AppActions.NEW_ITEM: {
-      return {
-        ...state,
-        itemForm: {
-          ...state.itemForm,
-          subject: new Item(),
-        },
-      };
-    }
-    case AppActions.EDIT_ITEM: {
-      return {
-        ...state,
-        itemForm: {
-          ...state.itemForm,
-          subject: action.item,
-        },
-      };
-    }
     case AppActions.CANCEL_ITEM: {
       return state;
     }

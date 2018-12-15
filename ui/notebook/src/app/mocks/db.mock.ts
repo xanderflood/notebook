@@ -35,14 +35,14 @@ export class MockDB<T extends UUIDable> {
     return t;
   }
   update(obj: any): T {
-    if (obj.uuid.length == 0) {
+    if (!obj.uuid.length) {
       throw "TODO 400 cannot update item without UUID"
     }
 
     var subject = this.index[obj.uuid];
     if (!subject) throw "TODO 404";
-    Object.assign(subject, obj);
 
+    Object.assign(subject, obj);
     return subject;
   }
   delete(uuid: string) {

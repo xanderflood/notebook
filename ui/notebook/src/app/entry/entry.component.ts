@@ -3,6 +3,8 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs'
 import { combineLatest, startWith, tap } from 'rxjs/operators'
 
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+
 import { AppState, EntryFormState } from '../store/app.state'
 import { getEntryFormStateEditing, getEntryFormStateLoading, getEntryFormStateSubject, getEntryFormStateError } from '../store/app.selectors'
 import { EditEntry, CancelEntry, CreateEntry, UpdateEntry } from '../store/app.actions'
@@ -26,6 +28,7 @@ export class EntryComponent implements OnInit {
   subject: Entry;
   storedSubject: Entry;
 
+  formDate: Date;
   formHours: number;
   formMinutes: number;
 
@@ -57,6 +60,10 @@ export class EntryComponent implements OnInit {
     });
   }
 
+  setDate(date: MatDatepickerInputEvent<Date>) {
+    this.formDate = date.value;
+  }
+
   dispatchEdit() {
     this.store.dispatch(new EditEntry(this.subject));
   }
@@ -67,11 +74,12 @@ export class EntryComponent implements OnInit {
 
   dispatchSave() {
     this.subject.moment = new Date(
-      this.subject.moment.getFullYear(),
-      this.subject.moment.getMonth(),
-      this.subject.moment.getDate(),
-      this.formHours, this.formMinutes);
-
+      this.formDate.getFullYear(),
+      this.formDate.getMonth(),
+      this.formDate.getDate(),
+      this.formHours,
+      this.formMinutes,
+    );
 
     this.store.dispatch(
       this.subject.uuid ?

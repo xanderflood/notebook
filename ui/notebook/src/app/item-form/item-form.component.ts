@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Output, Input, OnInit, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs'
 import { Store } from '@ngrx/store';
 
 import { ItemPropertiesFormComponent } from '../item-properties-form/item-properties-form.component';
 
 import { AppState } from '../store/app.state'
+import { getItemFormLoading, getItemFormError } from '../store/app.selectors'
 import { CancelItem, CreateItem, UpdateItem } from '../store/app.actions'
 import { Item, ItemProperty } from '../models/item.model';
 
@@ -13,19 +15,20 @@ import { Item, ItemProperty } from '../models/item.model';
   styleUrls: ['./item-form.component.scss']
 })
 export class ItemFormComponent implements OnInit {
-  //TODO: make this compatible with editing
-  @ViewChild(ItemPropertiesFormComponent)
-  propertiesForm: ItemPropertiesFormComponent;
+  @ViewChild(ItemPropertiesFormComponent) propertiesForm: ItemPropertiesFormComponent;
 
-  @Output()
-  done = new EventEmitter<void>();
+  @Output() canceled = new EventEmitter<void>();
 
-  @Input()
-  name: string;
-  @Input()
-  item: Item;
+  @Input() name: string;
+  @Input() item: Item;
 
-  constructor(private store: Store<AppState>) { }
+  loading: Observable<boolean>;
+  error: Observable<string>;
+
+  constructor(private store: Store<AppState>) {
+    this.loading = store.select(getItemFormLoading)
+    this.error = store.select(getItemFormError)
+  }
 
   ngOnInit() {
     if (this.item) {
@@ -37,17 +40,16 @@ export class ItemFormComponent implements OnInit {
   }
 
   dispatchCancel() {
-    this.done.emit();
+    this.canceled.emit();
     this.store.dispatch(new CancelItem());
   }
 
   dispatchSave() {
-    this.done.emit();
-
     this.item.name = name;
     this.item.properties = this.propertiesForm.properties;
+    console.log("dispatching save for", this.item)
     this.store.dispatch(this.item.uuid ?
-      new CreateItem(this.item, this.done.emit) :
-      new UpdateItem(this.item, this.done.emit));
+      new UpdateItem(this.item) :
+      new CreateItem(this.item));
   }
 }

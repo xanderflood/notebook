@@ -29,7 +29,6 @@ export class TransactionComponent implements OnInit {
     return this.transaction.itemUUID;
   }
   set itemUUID(u: string) {
-    console.log("SETTING")
     this.transaction.itemUUID = u;
     this.itemUUIDSubscriber.next(u);
   }

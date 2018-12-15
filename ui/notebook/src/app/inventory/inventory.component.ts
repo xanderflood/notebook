@@ -4,9 +4,12 @@ import { tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { AppState } from '../store/app.state';
-import { EditItem, DeleteItem } from '../store/app.actions';
+import { DeleteItem } from '../store/app.actions';
 import { getItemsArray } from '../store/app.selectors';
+
 import { Item } from '../models/item.model';
+import { ItemFormDialogData } from '../item-form-dialog/item-form-dialog.component'
+import { ItemFormRef } from '../item-form/item-form-ref'
 
 @Component({
   selector: 'app-inventory',
@@ -16,15 +19,17 @@ import { Item } from '../models/item.model';
 export class InventoryComponent implements OnInit {
   displayedColumns: string[] = ['name', 'number', 'numberTotal', 'lastUsed', 'editButton', 'deleteButton'];
 
-  items: Observable<Item[]> = this.store.select(getItemsArray)
-  .pipe(tap(items => console.log(items)));
+  items: Observable<Item[]> = this.store.select(getItemsArray);
 
-  constructor(private store: Store<AppState>) { }
+  constructor(
+    private store: Store<AppState>,
+    private itemFormRef: ItemFormRef,
+  ) { }
 
   ngOnInit() { }
 
   dispatchEditItem(item: Item) {
-    // this.store.dispatch(new EditItem(item));
+    this.itemFormRef.showDialog(new ItemFormDialogData("", item));
   }
 
   dispatchDeleteItem(item: Item) {

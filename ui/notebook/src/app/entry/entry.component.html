@@ -6,7 +6,7 @@
     <mat-panel-description>
     <div *ngIf="(editing | async)" (click)="$event.stopPropagation()">
       <mat-form-field style="width: 100px;">
-        <input matInput [value]="subject?.moment" [matDatepicker]="picker" placeholder="Choose a date" focused="true">
+        <input matInput [value]="subject?.moment" [matDatepicker]="picker" placeholder="Choose a date" focused="true" (dateInput)="setDate($event)">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>

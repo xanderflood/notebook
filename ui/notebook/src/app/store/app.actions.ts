@@ -51,16 +51,6 @@ export const EDIT_ITEM = '[App] EDIT_ITEM';
 export const CANCEL_ITEM = '[App] CANCEL_ITEM';
 export const DISPLAY_ITEM_FORM_DIALOG = '[App] DISPLAY_ITEM_FORM_DIALOG';
 
-export class ItemFormDialogData {
-  constructor(
-    public name: string,
-    public item?: Item) { }
-}
-
-export interface ItemFormDialogable {
-  toItemFormDialogData(): ItemFormDialogData;
-}
-
 // load the full entries index
 export class GetEntries implements Action {
   readonly type = GET_ENTRIES;
@@ -122,7 +112,7 @@ export class UpdateEntryError implements Action {
 // create an item
 export class CreateItem implements Action {
   readonly type = CREATE_ITEM;
-  constructor(public item: Item, public closeHook: () => void) { }
+  constructor(public item: Item) { }
 }
 export class CreateItemSuccess implements Action {
   readonly type = CREATE_ITEM_SUCCESS;
@@ -136,7 +126,7 @@ export class CreateItemError implements Action {
 // update an item
 export class UpdateItem implements Action {
   readonly type = UPDATE_ITEM;
-  constructor(public item: Item, public closeHook: () => void) { }
+  constructor(public item: Item) { }
 }
 export class UpdateItemSuccess implements Action {
   readonly type = UPDATE_ITEM_SUCCESS;
@@ -189,27 +179,6 @@ export class CancelEntry implements Action {
   readonly type = CANCEL_ENTRY;
   constructor(public entry: Entry) { }
 }
-// start editing a new item
-export class NewItem implements Action {
-  readonly type = NEW_ITEM;
-  constructor(public text: string) { }
-  toItemFormDialogData(): ItemFormDialogData {
-    return new ItemFormDialogData(this.text);
-  };
-}
-// start editing a new item
-export class EditItem implements Action {
-  readonly type = EDIT_ITEM;
-  constructor(public item: Item) { }
-  toItemFormDialogData(): ItemFormDialogData {
-    return new ItemFormDialogData("", this.item);
-  };
-}
-// open the item form dialog
-export class DisplayItemFormDialog implements Action {
-  readonly type = DISPLAY_ITEM_FORM_DIALOG;
-  constructor(public data: ItemFormDialogData) { }
-}
 // stop editing a new item
 export class CancelItem implements Action {
   readonly type = CANCEL_ITEM;
@@ -220,4 +189,4 @@ export type AppAction = GetEntries | GetEntriesSuccess | GetEntriesError | GetIt
   UpdateEntry | UpdateEntrySuccess | UpdateEntryError | CreateItem | CreateItemSuccess |
   CreateItemError | UpdateItem | UpdateItemSuccess | UpdateItemError | DeleteEntry |
   DeleteEntrySuccess | DeleteEntryError | DeleteItem | DeleteItemSuccess | DeleteItemError |
-  NewEntry | EditEntry | CancelEntry | NewItem | EditItem | CancelItem | DisplayItemFormDialog;
+  NewEntry | EditEntry | CancelEntry | CancelItem;

@@ -3,13 +3,12 @@ import { Observable, of } from 'rxjs';
 import { mergeMap, map, catchError, tap } from 'rxjs/operators';
 import { Action } from '@ngrx/store';
 import { Actions, Effect } from '@ngrx/effects';
-import { MatDialog } from '@angular/material';
 
+import { ItemFormRef } from '../item-form/item-form-ref'
 import { ItemService } from '../service/item.service'
 import { EntryService } from '../service/entry.service'
 
 import * as AppActions from './app.actions';
-import { ItemFormDialog } from '../item-form-dialog/item-form-dialog.component'
 
 const INIT_ACTION_TYPE = '@ngrx/store/init';
 
@@ -19,8 +18,8 @@ export class AppEffects {
   constructor(
     private itemService: ItemService,
     private entryService: EntryService,
+    private itemFormRef: ItemFormRef,
     private actions$: Actions,
-    private itemFormDialog: MatDialog,
   ) { }
 
   // INITIALIZE //
@@ -68,7 +67,7 @@ export class AppEffects {
       .pipe(
         mergeMap(action =>
           this.itemService.createItem(action.item).pipe(
-            tap(action.closeHook), // close the dialog
+            tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.CreateItemSuccess(item)),
             catchError(() => of(new AppActions.CreateItemError(action.item, "Failed to create item."))),
           )
@@ -91,37 +90,11 @@ export class AppEffects {
       .pipe(
         mergeMap(action =>
           this.itemService.updateItem(action.item).pipe(
-            tap(action.closeHook), // close the dialog
+            tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.UpdateItemSuccess(item)),
             catchError(() => of(new AppActions.UpdateItemError(action.item, "Failed to update item."))),
           )
         ),
-      );
-
-  // ITEM FORM DIALOG //
-  @Effect() NewItem: Observable<Action> =
-    this.actions$.ofType<AppActions.NewItem>(AppActions.NEW_ITEM)
-      .pipe(
-        mergeMap(action => [new AppActions.DisplayItemFormDialog(
-          new AppActions.ItemFormDialogData(action.text))]),
-      );
-  @Effect() EditItem: Observable<Action> =
-    this.actions$.ofType<AppActions.EditItem>(AppActions.EDIT_ITEM)
-      .pipe(
-        mergeMap(action =>[new AppActions.DisplayItemFormDialog(
-          new AppActions.ItemFormDialogData("", action.item))]),
-      );
-  @Effect() DisplayItemFormDialog: Observable<Action> =
-    this.actions$.ofType<AppActions.DisplayItemFormDialog>(AppActions.DISPLAY_ITEM_FORM_DIALOG)
-      .pipe<AppActions.DisplayItemFormDialog>(
-        tap(action => this.itemFormDialog.open(ItemFormDialog,
-            {
-              width: '50vw',
-              maxWidth: '400px',
-              minWidth: '350px',
-              data: action.data,
-            })
-          ),
       );
 
   // DELETE //

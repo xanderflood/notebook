@@ -74,12 +74,6 @@ export class ItemsData {
 }
 
 export class EntryFormState implements UUIDable {
-  //
-  // //
-  // // // in repository
-  // //
-  //
-  // uuid: string;
   get uuid(): string { return this.subject.uuid; }
   set uuid(u: string) { this.subject.uuid = u; }
   constructor(
