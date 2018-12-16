@@ -112,7 +112,7 @@ export class UpdateEntryError implements Action {
 // create an item
 export class CreateItem implements Action {
   readonly type = CREATE_ITEM;
-  constructor(public item: Item) { }
+  constructor(public item: Item, public onSuccess: (item: Item) => any) { }
 }
 export class CreateItemSuccess implements Action {
   readonly type = CREATE_ITEM_SUCCESS;
@@ -126,7 +126,7 @@ export class CreateItemError implements Action {
 // update an item
 export class UpdateItem implements Action {
   readonly type = UPDATE_ITEM;
-  constructor(public item: Item) { }
+  constructor(public item: Item, public onSuccess: (item: Item) => any) { }
 }
 export class UpdateItemSuccess implements Action {
   readonly type = UPDATE_ITEM_SUCCESS;

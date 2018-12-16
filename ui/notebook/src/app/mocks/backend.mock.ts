@@ -46,7 +46,7 @@ export class MockBackendInterceptor implements HttpInterceptor {
     // array in local storage for registered items
     // wrap in delayed observable to simulate server api call
     return of(null).pipe(mergeMap(() => {
-      console.log("mocking request:", request.method, request.url, request.body);
+      // console.log("mocking request:", request.method, request.url, request.body);
 
       // authenticate
       // if (request.url.endsWith('/users/authenticate') && request.method === 'POST') {

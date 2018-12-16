@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { createFeatureSelector } from '@ngrx/store'
 
 import { AppState, EntriesAndItemsManager, EntriesData, ItemsData, EntryFormState, ItemFormState } from './app.state'
+import { Item } from '../models/item.model'
 
 export const getDataState = (state: AppState) => state.app;
 
@@ -46,7 +47,10 @@ export const getItemsArray = createSelector(
 );
 export const getItemData = (uuid: string) => createSelector(
   getItemsRepository,
-  repo => repo.fetch(uuid),
+  repo => {
+    var item = repo.fetch(uuid);
+    return item ? item.copy() as Item : item;
+  },
 );
 
 ///////////
@@ -56,7 +60,10 @@ export const getItemData = (uuid: string) => createSelector(
 //entries
 export const getEntryFormState = (uuid: string) => createSelector(
   getDataState,
-  state => state.entries.repository.fetch(uuid),
+  state => {
+    var efs = state.entries.repository.fetch(uuid);
+    return efs ? efs.copy() as EntryFormState : efs;
+  }
 );
 export const getEntryFormStateEditing = (uuid: string) => createSelector(
   getEntryFormState(uuid),

@@ -26,11 +26,11 @@
       </mat-radio-group>
 
       <div>
-        <app-item-selector #itemSelector style="width: 100%;" [uuid]="itemUUID" (uuidChange)="itemUUID = $event" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
+        <app-item-selector style="width: 100%;" [uuid]="itemUUID" (uuidChange)="itemUUID = $event; countInput.focus();" [allowNew]="transaction.type == transactionType.Produced"></app-item-selector>
       </div>
 
       <div style="background-color: #EEEEEE;">
-        <input matInput type="number" [(ngModel)]="transaction.count"/>
+        <input matInput #countInput type="number" [(ngModel)]="transaction.count"/>
       </div>
 
       <app-item-properties [properties]="item?.properties"></app-item-properties>

@@ -15,9 +15,6 @@ export class ItemPropertiesFormComponent implements OnInit {
     this.ensureNonempty();
   }
   @Input() get properties(): ItemProperty[] {
-    console.log("getting", this.propertiesArray.filter(
-      p => (p.name.length > 0) || (p.value.length > 0)).map(
-      p => ItemProperty.copy(p)));
     return this.propertiesArray.filter(
       p => (p.name.length > 0) || (p.value.length > 0)).map(
       p => ItemProperty.copy(p));

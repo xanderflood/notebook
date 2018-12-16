@@ -29,7 +29,7 @@ export class InventoryComponent implements OnInit {
   ngOnInit() { }
 
   dispatchEditItem(item: Item) {
-    this.itemFormRef.showDialog(new ItemFormDialogData("", item));
+    this.itemFormRef.showDialog(new ItemFormDialogData(item));
   }
 
   dispatchDeleteItem(item: Item) {

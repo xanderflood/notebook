@@ -47,9 +47,10 @@ export class EntryComponent implements OnInit {
     this.subjectObs.pipe(
       combineLatest(eAugmented, (s, e) => ({s: s, e: e})),
     ).subscribe(data => {
-      this.storedSubject = Entry.copy(data.s);
+      if (data.s) this.storedSubject = Entry.copy(data.s);
 
       if (data.e) {
+        this.formDate = this.storedSubject.moment;
         this.formHours = this.storedSubject.moment.getHours();
         this.formMinutes = this.storedSubject.moment.getMinutes();
         this.gridListAspectRatio = '1:1';

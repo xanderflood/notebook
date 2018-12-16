@@ -51,17 +51,7 @@ export class AppEffects {
         ),
       );
 
-  // SAVE //
-  @Effect() CreateEntry: Observable<Action> =
-    this.actions$.ofType<AppActions.CreateEntry>(AppActions.CREATE_ENTRY)
-      .pipe(
-        mergeMap(action =>
-          this.entryService.createEntry(action.entry).pipe(
-            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
-            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to create entry."))),
-          )
-        ),
-      );
+  // SINGLE ITEM //
   @Effect() CreateItem: Observable<Action> =
     this.actions$.ofType<AppActions.CreateItem>(AppActions.CREATE_ITEM)
       .pipe(
@@ -69,19 +59,8 @@ export class AppEffects {
           this.itemService.createItem(action.item).pipe(
             tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.CreateItemSuccess(item)),
+            tap(item => action.onSuccess(item.item)),
             catchError(() => of(new AppActions.CreateItemError(action.item, "Failed to create item."))),
-          )
-        ),
-      );
-
-  // UPDATE //
-  @Effect() UpdateEntry: Observable<Action> =
-    this.actions$.ofType<AppActions.UpdateEntry>(AppActions.UPDATE_ENTRY)
-      .pipe(
-        mergeMap(action =>
-          this.entryService.updateEntry(action.entry).pipe(
-            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
-            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to update entry."))),
           )
         ),
       );
@@ -92,7 +71,30 @@ export class AppEffects {
           this.itemService.updateItem(action.item).pipe(
             tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.UpdateItemSuccess(item)),
+            tap(item => action.onSuccess(item.item)),
             catchError(() => of(new AppActions.UpdateItemError(action.item, "Failed to update item."))),
+          )
+        ),
+      );
+
+  // SINGLE ENTRY //
+  @Effect() CreateEntry: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateEntry>(AppActions.CREATE_ENTRY)
+      .pipe(
+        mergeMap(action =>
+          this.entryService.createEntry(action.entry).pipe(
+            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
+            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to create entry."))),
+          )
+        ),
+      );
+  @Effect() UpdateEntry: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateEntry>(AppActions.UPDATE_ENTRY)
+      .pipe(
+        mergeMap(action =>
+          this.entryService.updateEntry(action.entry).pipe(
+            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
+            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to update entry."))),
           )
         ),
       );

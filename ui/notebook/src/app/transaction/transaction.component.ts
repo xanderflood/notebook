@@ -10,8 +10,6 @@ import { getItemData } from '../store/app.selectors'
 import { Transaction, TransactionType } from '../models/transaction.model';
 import { Item } from '../models/item.model';
 
-import { ItemSelectorComponent } from '../item-selector/item-selector.component';
-
 @Component({
   selector: 'app-transaction',
   templateUrl: './transaction.component.html',
@@ -33,8 +31,6 @@ export class TransactionComponent implements OnInit {
     this.itemUUIDSubscriber.next(u);
   }
 
-  @ViewChild('itemSelector') itemSelector: ItemSelectorComponent;
-
   //make these available in the view renderer
   transactionType = TransactionType;
   types = Object.values(TransactionType);
@@ -48,5 +44,9 @@ export class TransactionComponent implements OnInit {
       startWith(this.transaction.itemUUID),
       switchMap(uuid => this.store.select(getItemData(uuid))),
     ).subscribe(item => this.item = item);
+  }
+
+  uuidChange(uuid: string) {
+    this.itemUUID = uuid;
   }
 }

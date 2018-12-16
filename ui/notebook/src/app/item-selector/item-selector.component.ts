@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { FormControl } from '@angular/forms';
 
 import { Observable, Subject, Subscriber } from 'rxjs';
-import { startWith, combineLatest, tap, share } from 'rxjs/operators';
+import { startWith, combineLatest, tap, map, share, filter } from 'rxjs/operators';
 
 import { AppState } from '../store/app.state'
 import { getItemsRepository } from '../store/app.selectors'
@@ -57,7 +57,10 @@ export class ItemSelectorComponent implements OnInit {
 
     this.uuidObs.pipe(
       combineLatest(this.itemsRepository, (uuid, repo) => uuid ? repo.fetch(uuid) : null),
-    ).subscribe(item => this.selectedItem = item);
+      filter(item => !!item),
+    ).subscribe(item => {
+      this.selectedItem = item
+    });
 
     var textObs = this.queryCtrl.valueChanges.pipe(
       startWith(""),
@@ -66,6 +69,7 @@ export class ItemSelectorComponent implements OnInit {
 
     textObs.pipe(
       tap(value => { if (this.storingText) this.textOnNewClick = value; }),
+      map(value => value ? value : ""), //coerce to string
       combineLatest(this.itemsRepository, this.filterItems),
     ).subscribe(items => this.filteredItems = items);
   }
@@ -74,7 +78,10 @@ export class ItemSelectorComponent implements OnInit {
     if ($event.option.value) {
       this.uuid = $event.option.value.uuid;
     } else {
-      this.itemFormRef.showDialog(new ItemFormDialogData(this.textOnNewClick));
+      this.itemFormRef.showDialog(new ItemFormDialogData(
+        new Item(this.textOnNewClick),
+        item => this.uuid = item.uuid,
+      ));
       this.startStoringText();
     }
   }
@@ -102,8 +109,8 @@ export class ItemSelectorComponent implements OnInit {
       item.name.toLowerCase().indexOf(q) === 0);
   }
 
-  overlayIsVisible(): boolean {
-    return (this.queryBox.nativeElement !== this.queryBox.nativeElement.ownerDocument.activeElement)
-      && !!this.uuidVal;
+  hideOverlay(): boolean {
+    return (this.queryBox.nativeElement === this.queryBox.nativeElement.ownerDocument.activeElement)
+      || !this.selectedItem;
   }
 }

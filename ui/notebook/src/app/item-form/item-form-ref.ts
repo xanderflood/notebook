@@ -12,6 +12,7 @@ export class ItemFormRef {
       width: '50vw',
       maxWidth: '400px',
       minWidth: '350px',
+      restoreFocus: false,
       data: data,
     });
   }

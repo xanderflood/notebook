@@ -7,14 +7,14 @@ import { AppState, EntryFormState } from '../store/app.state'
 
 export class ItemFormDialogData {
   constructor(
-    public name: string,
-    public item?: Item,
+    public item: Item,
+    public onSuccess: (item: Item) => any = (item) => null,
   ) { }
 }
 
 @Component({
   selector: 'app-new-item-dialog',
-  template: '<app-item-form (canceled)="close()" [name]="data.name" [item]="data.item"></app-item-form>'
+  template: '<app-item-form (canceled)="close()" [item]="data.item" (success)="data.onSuccess($event)"></app-item-form>'
 })
 export class ItemFormDialog {
   constructor(

@@ -17,9 +17,9 @@ import { Item, ItemProperty } from '../models/item.model';
 export class ItemFormComponent implements OnInit {
   @ViewChild(ItemPropertiesFormComponent) propertiesForm: ItemPropertiesFormComponent;
 
+  @Output() success = new EventEmitter<Item>();
   @Output() canceled = new EventEmitter<void>();
 
-  @Input() name: string;
   @Input() item: Item;
 
   loading: Observable<boolean>;
@@ -33,7 +33,6 @@ export class ItemFormComponent implements OnInit {
   ngOnInit() {
     if (this.item) {
       this.item = Item.copy(this.item);
-      this.name = this.item.name;
     } else {
       this.item = new Item();
     }
@@ -45,11 +44,9 @@ export class ItemFormComponent implements OnInit {
   }
 
   dispatchSave() {
-    this.item.name = name;
     this.item.properties = this.propertiesForm.properties;
-    console.log("dispatching save for", this.item)
     this.store.dispatch(this.item.uuid ?
-      new UpdateItem(this.item) :
-      new CreateItem(this.item));
+      new UpdateItem(this.item, item => this.success.emit(item)) :
+      new CreateItem(this.item, item => this.success.emit(item)));
   }
 }

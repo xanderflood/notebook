@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>New Item</h1>
 
 <div mat-dialog-content>
-  <input matInput placeholder="Name" aria-label="Name" [(ngModel)]="name" style="background-color: #EEEEEE;"/>
+  <input matInput placeholder="Name" aria-label="Name" [(ngModel)]="item.name" style="background-color: #EEEEEE;" #ctrl="ngModel" required/>
 
   <app-item-properties-form [properties]="item.properties"></app-item-properties-form>
 </div>
