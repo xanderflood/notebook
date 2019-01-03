@@ -3,26 +3,39 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
+import { AuthService } from './auth.service';
 import { Entry } from '../models/entry.model';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+interface QueryResponse {
+  entries: Entry[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class EntryService {
   private entriesURL = '/api/entries';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService, 
+  ) { }
+
+  private requestOptions(): {headers: HttpHeaders} {
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.auth.token,
+      })
+    }
+  }
 
   private log(message: string) {
     console.log(`EntryService: ${message}`);
   }
 
   getEntries(): Observable<Entry[]> {
-    return this.http.get<Entry[]>(this.entriesURL)
+    return this.http.get<QueryResponse>(this.entriesURL, this.requestOptions())
       .pipe(
-        map(entries => entries.map(entry => Entry.fromObject(entry))),
+        map(data => data.entries.map(entry => Entry.fromObject(entry))),
         catchError(this.handleError('getEntries', [])),
       );
   }
@@ -30,7 +43,7 @@ export class EntryService {
   /** GET entry by uuid. Will 404 if uuid not found */
   getEntry(uuid: string): Observable<Entry> {
     const url = `${this.entriesURL}/${uuid}`;
-    return this.http.get<Entry>(url).pipe(
+    return this.http.get<Entry>(url, this.requestOptions()).pipe(
       map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>(`getEntry uuid=${uuid}`))
     );
@@ -40,7 +53,7 @@ export class EntryService {
 
   /** POST: create a new entry */
   createEntry(entry: Entry): Observable<Entry> {
-    return this.http.post<Entry>(this.entriesURL, entry, httpOptions).pipe(
+    return this.http.post<Entry>(this.entriesURL, entry, this.requestOptions()).pipe(
       map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>('createEntry'))
     );
@@ -48,7 +61,7 @@ export class EntryService {
 
   /** POST: update an existing entry */
   updateEntry(entry: Entry): Observable<Entry> {
-    return this.http.patch<Entry>(this.entriesURL, entry, httpOptions).pipe(
+    return this.http.patch<Entry>(this.entriesURL, entry, this.requestOptions()).pipe(
       map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>('updateEntry'))
     );
@@ -59,7 +72,7 @@ export class EntryService {
     const uuid = typeof entry === 'string' ? entry : entry.uuid;
     const url = `${this.entriesURL}/${uuid}`;
 
-    return this.http.delete<Entry>(url, httpOptions).pipe(
+    return this.http.delete<Entry>(url, this.requestOptions()).pipe(
       map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>('deleteEntry'))
     );

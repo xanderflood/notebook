@@ -3,34 +3,49 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
+import { AuthService } from './auth.service';
 import { Item } from '../models/item.model';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+interface QueryResponse {
+  items: Item[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class ItemService {
   private itemsURL = '/api/items';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService, 
+  ) { }
+
+  private requestOptions(): {headers: HttpHeaders} {
+    return {
+      headers: new HttpHeaders(
+        {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.auth.token,
+        },
+      )
+    }
+  }
 
   private log(message: string) {
     console.log(`ItemService: ${message}`);
   }
 
   getItems(): Observable<Item[]> {
-    return this.http.get<Item[]>(this.itemsURL)
+    return this.http.get<QueryResponse>(this.itemsURL, this.requestOptions())
       .pipe(
-        map(items => items.map(item => Item.fromObject(item))),
-        catchError(this.handleError('getItems', []))
+        map(data => data.items.map(item => Item.fromObject(item))),
+        catchError(this.handleError('getItems', [])),
       );
   }
 
   /** GET item by uuid. Will 404 if uuid not found */
   getItem(uuid: string): Observable<Item> {
     const url = `${this.itemsURL}/${uuid}`;
-    return this.http.get<Item>(url).pipe(
+    return this.http.get<Item>(url, this.requestOptions()).pipe(
       map(item => Item.fromObject(item)), // returns a {0|1} element array
       catchError(this.handleError<Item>(`getItem uuid=${uuid}`))
     );
@@ -40,7 +55,7 @@ export class ItemService {
 
   /** POST: create a new item */
   createItem(item: Item): Observable<Item> {
-    return this.http.post<Item>(this.itemsURL, item, httpOptions).pipe(
+    return this.http.post<Item>(this.itemsURL, item, this.requestOptions()).pipe(
       map(item => Item.fromObject(item)),
       catchError(this.handleError<Item>('createItem'))
     );
@@ -48,7 +63,7 @@ export class ItemService {
 
   /** PATCH: update an existing item */
   updateItem(item: Item): Observable<Item> {
-    return this.http.patch<Item>(this.itemsURL, item, httpOptions).pipe(
+    return this.http.patch<Item>(this.itemsURL, item, this.requestOptions()).pipe(
       map(item => Item.fromObject(item)),
       catchError(this.handleError<Item>('updateItem'))
     );
@@ -59,8 +74,8 @@ export class ItemService {
     const uuid = typeof item === 'string' ? item : item.uuid;
     const url = `${this.itemsURL}/${uuid}`;
 
-    return this.http.delete<Item>(url, httpOptions).pipe(
-      map(item => Item.fromObject(item)), // returns a {0|1} element array
+    return this.http.delete<Item>(url, this.requestOptions()).pipe(
+      map(item => Item.fromObject(item)),
       catchError(this.handleError<Item>('deleteItem'))
     );
   }

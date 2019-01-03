@@ -9,7 +9,7 @@ import { ItemProperty } from '../models/item.model'
 })
 export class ItemPropertiesFormComponent implements OnInit {
 
-  private propertiesArray: ItemProperty[] = [];
+  propertiesArray: ItemProperty[] = [];
   set properties(ary: ItemProperty[]) {
     this.propertiesArray = ary.slice();
     this.ensureNonempty();

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+echo "Starting $1"
+
+cd build/$1/ && godotenv -f ../../.env ./$1

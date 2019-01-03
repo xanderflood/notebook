@@ -9,6 +9,6 @@ export class ItemComponent {
   @Input() href: string;
   @Input() text: string;
 
-  constructor(private router: Router) { }
+  constructor(public router: Router) { }
 
 }

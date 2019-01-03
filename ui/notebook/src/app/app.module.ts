@@ -85,7 +85,7 @@ import { ItemComponent } from './nav-menu/item/item.component';
     MatTableModule
   ],
   entryComponents: [ItemFormDialog],
-  providers: [mockBackendProvider],
+  providers: !environment.production ? [mockBackendProvider] : [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
