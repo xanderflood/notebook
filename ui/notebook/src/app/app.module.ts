@@ -69,7 +69,7 @@ import { ItemComponent } from './nav-menu/item/item.component';
 
     StoreModule.forRoot({ app: AppReducer }),
     EffectsModule.forRoot([AppEffects]),
-    !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
+    environment.reduxDevTools ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
 
     BrowserAnimationsModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,

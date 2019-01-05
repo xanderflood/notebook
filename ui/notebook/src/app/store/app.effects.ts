@@ -83,8 +83,8 @@ export class AppEffects {
       .pipe(
         mergeMap(action =>
           this.entryService.createEntry(action.entry).pipe(
-            map(entry => new AppActions.UpdateEntrySuccess(action.entry.uuid, entry)),
-            catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to create entry."))),
+            map(entry => new AppActions.CreateEntrySuccess(action.entry.uuid, entry)),
+            catchError(() => of(new AppActions.CreateEntryError(action.entry, "Failed to create entry."))),
           )
         ),
       );

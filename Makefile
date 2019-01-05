@@ -12,12 +12,16 @@ ui:
 	cd ui/notebook && ng build --prod --output-path=../../build/api/public/ && cd -
 
 devui:
-	@echo "Building backend"
+	@echo "Building dev backend"
 	cd ui/notebook && ng build --output-path=../../build/api/public/ && cd -
 
-run: api ui start
+stagingui:
+	@echo "Building staging backend"
+	cd ui/notebook && ng build --configuration=staging --output-path=../../build/api/public/ && cd -
+
+run: api stagingui start
 gorun: api start
-ngrun: ui start
+ngrun: stagingui start
 start:
 	echo "starting"
 	./start api
