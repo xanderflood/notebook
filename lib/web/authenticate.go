@@ -8,6 +8,7 @@ import (
 	"github.com/xanderflood/notebook/lib/tools"
 )
 
+//Authorization alias for jwt.Claims, an interface for validating claims
 type Authorization = jwt.Claims
 
 //Authenticator Authenticator
