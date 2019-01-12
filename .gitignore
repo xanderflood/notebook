@@ -15,6 +15,7 @@
 .glide/
 
 vendor/
+cmd/api/api
 build/api/*
 build/api/public/
 !build/api/public/.keep
