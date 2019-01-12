@@ -8,8 +8,8 @@ import (
 )
 
 //Wrap wrap with standard middleware chain
-func Wrap(log tools.Logger, h http.Handler) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Wrap(log tools.Logger, h http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -30,7 +30,7 @@ func Wrap(log tools.Logger, h http.Handler) func(w http.ResponseWriter, r *http.
 
 		lrw := &LoggingResponseWriter{w: w, log: log, r: *r}
 		h.ServeHTTP(lrw, r)
-	}
+	})
 }
 
 //////

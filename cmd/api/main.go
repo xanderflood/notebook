@@ -24,7 +24,6 @@ import (
 var opts struct {
 	LogLevel         string `long:"log-level" env:"LOG_LEVEL" default:"INFO"`
 	JWTSigningSecret string `long:"jwt-signing-secret" env:"JWT_SIGNING_SECRET" required:"true"`
-	PublicRoot       string `long:"public-root" env:"PUBLIC_ROOT" required:"true"`
 	Environment      string `long:"environment" env:"ENVIRONMENT" default:"PRODUCTION"`
 	PageSize         int    `long:"page-size" env:"PAGE_SIZE" required:"true"`
 	DBURL            string `long:"db-url" env:"DB_URL" required:"true"`
@@ -68,7 +67,7 @@ func main() {
 	vars := web.MuxVars{}
 	service := api.New(authenticator, logger, dbInterface, vars)
 
-	router := NewRouter(service, logger, opts.PublicRoot)
+	router := NewRouter(service, logger)
 	s := &http.Server{
 		Addr:           ":4200",
 		Handler:        router,

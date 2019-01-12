@@ -5,6 +5,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.6.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jinzhu/gorm v1.9.2
@@ -16,6 +17,7 @@ require (
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/pkg/errors v0.8.0
+	github.com/rs/cors v1.6.0 // indirect
 	github.com/xanderflood/database v0.0.0-20180825165732-bfefed7693b5 // indirect
 	github.com/xanderflood/dev-o v0.0.0-20180726224122-6f79e1273212
 )
