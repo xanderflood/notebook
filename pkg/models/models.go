@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	uuid "github.com/nu7hatch/gouuid"
@@ -94,6 +95,10 @@ const (
 	TransactionTypeProduced = "Produced"
 	//TransactionTypeConsumed "Consumed"
 	TransactionTypeConsumed = "Consumed"
+	//TransactionTypeCultured "Cultured"
+	TransactionTypeCultured = "Cultured"
+	//TransactionTypeTransferred "Transferred"
+	TransactionTypeTransferred = "Transferred"
 )
 
 //Transaction Transaction
@@ -109,13 +114,26 @@ type Transaction struct {
 type Item struct {
 	Metadata
 	UserUUID     string          `json:"user_uuid" sql:"index"`
+	Name         *string         `json:"name" sql:"index"`
+	Type         *ItemType       `json:"type,omitempty" sql:"type"`
 	LastUsed     *time.Time      `json:"last_used,omitempty" sql:"index"`
 	Properties   *[]ItemProperty `json:"properties,omitempty"`
 	NumRemaining *int            `json:"num_remaining,omitempty"`
 	NumProduced  *int            `json:"num_produced,omitempty"`
 	NumConsumed  *int            `json:"num_consumed,omitempty"`
 	History      *[]string
+	Individuals  *[]string
 }
+
+//ItemType ItemType
+type ItemType string
+
+const (
+	//ItemTypeInventory "Inventory"
+	ItemTypeInventory = "Inventory"
+	//ItemTypeUnique "Unique"
+	ItemTypeUnique = "Unique"
+)
 
 //ItemProperty ItemProperty
 type ItemProperty struct {
@@ -125,6 +143,9 @@ type ItemProperty struct {
 
 //Validate validate the item
 func (i Item) Validate() error {
+	if (i.Name != nil) && len(strings.TrimSpace(*i.Name)) == 0 {
+		return errors.New("name is required")
+	}
 	if (i.LastUsed != nil) && (*i.LastUsed != time.Time{}) {
 		return errors.New("last_used is not valid")
 	}

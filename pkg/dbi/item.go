@@ -16,6 +16,7 @@ import (
 type Item struct {
 	Metadata
 	UserUUID     string         `gorm:"column:user_uuid"`
+	Name         string         `gorm:"column:name"`
 	LastUsed     time.Time      `gorm:"column:last_used"`
 	NumRemaining int            `gorm:"column:num_remaining"`
 	NumProduced  int            `gorm:"column:num_produced"`
@@ -69,6 +70,9 @@ func DBItem(item models.Item) Item {
 		UserUUID: item.UserUUID,
 	}
 
+	if item.Name != nil {
+		i.Name = *item.Name
+	}
 	if item.LastUsed != nil {
 		i.LastUsed = *item.LastUsed
 	}
@@ -97,6 +101,7 @@ func (i Item) ToModel() models.Item {
 	return models.Item{
 		Metadata:     i.Metadata.ToModel(),
 		UserUUID:     i.UserUUID,
+		Name:         &i.Name,
 		LastUsed:     &i.LastUsed,
 		NumRemaining: &i.NumRemaining,
 		NumProduced:  &i.NumProduced,

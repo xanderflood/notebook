@@ -111,6 +111,8 @@ func (pc *GormClient) CreateEntry(ctx context.Context, userUUID string, entry mo
 	entry.Metadata.Create()
 	entry.UserUUID = userUUID
 
+	//TODO; update all items! use a DB transaction
+
 	return entry, pc.db.Create(DBEntry(entry)).Error
 }
 
@@ -134,6 +136,8 @@ func (pc *GormClient) UpdateEntry(ctx context.Context, userUUID string, entry mo
 	if err != nil {
 		return models.Entry{}, perrors.Wrapf(err, "failed to update entry `%s` for user %s", entry.UUID, userUUID)
 	}
+
+	//TODO; update all items! use a DB transaction
 
 	return entry, nil
 }
