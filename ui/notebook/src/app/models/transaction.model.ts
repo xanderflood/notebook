@@ -27,4 +27,6 @@ export class Transaction {
 export enum TransactionType {
   Produced = "Produced",
   Consumed = "Consumed",
+  Cultured = "Cultured",
+  Transferred = "Transferred",
 }

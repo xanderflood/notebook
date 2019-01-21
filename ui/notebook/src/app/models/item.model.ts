@@ -3,10 +3,11 @@ import { Transaction } from './transaction.model';
 import { UUIDable } from '../store/repository'
 
 export class Item implements UUIDable {
-  uuid: string = "";
+  public uuid = ""
   constructor(
     public name?: string,
     uuid?: string,
+    public type?: ItemType,
     public numProduced?: number,
     public numRemaining?: number,
     public properties?: ItemProperty[],
@@ -15,6 +16,7 @@ export class Item implements UUIDable {
   ) {
     this.name = name || "";
     this.uuid = uuid || "";
+    this.type = type || ItemType.Inventory;
     this.numProduced = numProduced || 0;
     this.numRemaining = numRemaining || 0;
     this.properties = properties || [];
@@ -54,4 +56,9 @@ export class ItemProperty {
   static copy(ps: ItemProperty): ItemProperty {
     return ItemProperty.fromObject(ps);
   }
+}
+
+export enum ItemType {
+  Inventory = "Inventory",
+  Unique = "Unique",
 }
