@@ -45,9 +45,19 @@ func (r *CreateItemRequest) Validate() error {
 		return errors.New("cannot create item with UUID")
 	}
 
-	//TODO validations on properties?
+	if r.Name == nil {
+		return errors.New("name is required")
+	}
 
-	return nil
+	if r.Type == nil {
+		return errors.New("type is required")
+	}
+
+	if r.Properties == nil {
+		return errors.New("properies is required")
+	}
+
+	return r.Item.ValidatePresentFields()
 }
 
 //CreateItemResponse CreateItemResponse
@@ -66,11 +76,15 @@ func (r *CreateEntryRequest) Validate() error {
 		return errors.New("cannot create entry with UUID")
 	}
 
-	if len(*r.Transactions) <= 0 {
-		return errors.New("entry does not contain any transactions")
+	if r.Moment == nil {
+		return errors.New("moment is not valid")
 	}
 
-	return nil
+	if r.Transactions == nil {
+		return errors.New("transactions is required")
+	}
+
+	return r.Entry.ValidatePresentFields()
 }
 
 //CreateEntryResponse CreateEntryResponse
