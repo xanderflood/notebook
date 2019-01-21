@@ -6,7 +6,7 @@ import (
 
 	flags "github.com/jessevdk/go-flags"
 	"github.com/jinzhu/gorm"
-	"github.com/xanderflood/notebook/pkg/dbi"
+	"github.com/xanderflood/notebook/pkg/models"
 
 	//GORM postgres dialect
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -36,5 +36,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db.AutoMigrate(&dbi.Item{}, &dbi.Entry{})
+	db.AutoMigrate(&models.Item{}, &models.Entry{})
 }
