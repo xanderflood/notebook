@@ -7,6 +7,7 @@ import { Actions, Effect } from '@ngrx/effects';
 import { ItemFormRef } from '../item-form/item-form-ref'
 import { ItemService } from '../service/item.service'
 import { EntryService } from '../service/entry.service'
+import { MessageService } from '../service/message.service'
 
 import * as AppActions from './app.actions';
 
@@ -18,6 +19,8 @@ export class AppEffects {
   constructor(
     private itemService: ItemService,
     private entryService: EntryService,
+    private messageService: MessageService,
+    // TODO: private authService: AuthService,
     private itemFormRef: ItemFormRef,
     private actions$: Actions,
   ) { }
@@ -60,9 +63,23 @@ export class AppEffects {
             tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.CreateItemSuccess(item)),
             tap(item => action.onSuccess(item.item)),
-            catchError(() => of(new AppActions.CreateItemError(action.item, "Failed to create item."))),
+            catchError(error => of(new AppActions.CreateItemError(action.item, "Failed to create item."))),
           )
         ),
+      );
+  @Effect() CreateItemSuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateItemSuccess>(AppActions.CREATE_ITEM_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Item \"" + action.item.name + "\" successfully created.")),
+        map(() => null),
+      );
+  @Effect() CreateItemError: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateItemError>(AppActions.CREATE_ITEM_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Item could not be created: " + action.error + ".")),
+        map(() => null),
       );
   @Effect() UpdateItem: Observable<Action> =
     this.actions$.ofType<AppActions.UpdateItem>(AppActions.UPDATE_ITEM)
@@ -71,10 +88,24 @@ export class AppEffects {
           this.itemService.updateItem(action.item).pipe(
             tap(() => this.itemFormRef.closeDialog()), // close the dialog
             map(item => new AppActions.UpdateItemSuccess(item)),
-            tap(item => action.onSuccess(item.item)),
+            tap(item => action.onSuccess(action.item)),
             catchError(() => of(new AppActions.UpdateItemError(action.item, "Failed to update item."))),
           )
         ),
+      );
+  @Effect() UpdateItemSuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateItemSuccess>(AppActions.UPDATE_ITEM_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Item \"" + action.item.name + "\" successfully updated.")),
+        map(() => null),
+      );
+  @Effect() UpdateItemError: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateItemError>(AppActions.UPDATE_ITEM_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Item could not be updated: " + action.error + ".")),
+        map(() => null),
       );
 
   // SINGLE ENTRY //
@@ -88,6 +119,20 @@ export class AppEffects {
           )
         ),
       );
+  @Effect() CreateEntrySuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateEntrySuccess>(AppActions.CREATE_ENTRY_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry \"" + action.entry.moment + "\" successfully created.")),
+        map(() => null),
+      );
+  @Effect() CreateEntryError: Observable<Action> =
+    this.actions$.ofType<AppActions.CreateEntryError>(AppActions.CREATE_ENTRY_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry could not be created: " + action.error + ".")),
+        map(() => null),
+      );
   @Effect() UpdateEntry: Observable<Action> =
     this.actions$.ofType<AppActions.UpdateEntry>(AppActions.UPDATE_ENTRY)
       .pipe(
@@ -97,6 +142,20 @@ export class AppEffects {
             catchError(() => of(new AppActions.UpdateEntryError(action.entry, "Failed to update entry."))),
           )
         ),
+      );
+  @Effect() UpdateEntrySuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateEntrySuccess>(AppActions.UPDATE_ENTRY_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry \"" + action.entry.moment + "\" successfully updated.")),
+        map(() => null),
+      );
+  @Effect() UpdateEntryError: Observable<Action> =
+    this.actions$.ofType<AppActions.UpdateEntryError>(AppActions.UPDATE_ENTRY_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry could not be updated: " + action.error + ".")),
+        map(() => null),
       );
 
   // DELETE //
@@ -110,6 +169,20 @@ export class AppEffects {
           )
         ),
       );
+  @Effect() DeleteEntrySuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.DeleteEntrySuccess>(AppActions.DELETE_ENTRY_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry \"" + action.entry.moment + "\" successfully deleted.")),
+        map(() => null),
+      );
+  @Effect() DeleteEntryError: Observable<Action> =
+    this.actions$.ofType<AppActions.DeleteEntryError>(AppActions.DELETE_ENTRY_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Entry could not be deleted: " + action.error + ".")),
+        map(() => null),
+      );
   @Effect() DeleteItem: Observable<Action> =
     this.actions$.ofType<AppActions.DeleteItem>(AppActions.DELETE_ITEM)
       .pipe(
@@ -120,5 +193,19 @@ export class AppEffects {
               of(new AppActions.DeleteEntryError(action.item, "Failed to delete item."))),
           )
         ),
+      );
+  @Effect() DeleteItemSuccess: Observable<Action> =
+    this.actions$.ofType<AppActions.DeleteItemSuccess>(AppActions.DELETE_ITEM_SUCCESS)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "ITem \"" + action.item.name + "\" successfully deleted.")),
+        map(() => null),
+      );
+  @Effect() DeleteItemError: Observable<Action> =
+    this.actions$.ofType<AppActions.DeleteItemError>(AppActions.DELETE_ITEM_ERROR)
+      .pipe(
+        tap(action => this.messageService.notice(
+          "Item could not be deleted: " + action.error + ".")),
+        map(() => null),
       );
 }
