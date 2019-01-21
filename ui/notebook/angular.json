@@ -90,6 +90,9 @@
           "configurations": {
             "production": {
               "browserTarget": "notebook:build:production"
+            },
+            "staging": {
+              "browserTarget": "notebook:build:staging"
             }
           }
         },

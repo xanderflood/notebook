@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { environment } from '../environments/environment';
 
 // component libraries
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,9 +16,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
-
 import { AppRoutingModule } from './app-routing.module';
-import { environment } from '../environments/environment';
 
 // http stuff
 import { HttpClientModule } from '@angular/common/http';
@@ -84,8 +83,8 @@ import { ItemComponent } from './nav-menu/item/item.component';
     MatMenuModule,
     MatTableModule
   ],
-  entryComponents: [ItemFormDialog],
-  providers: !environment.production ? [mockBackendProvider] : [],
+  entryComponents: [ItemFormDialog, SnackComponent],
+  providers: environment.mockBackend ? [mockBackendProvider] : [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
