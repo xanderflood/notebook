@@ -6,6 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Item } from '../models/item.model';
 
+import { options } from '../../environments/environment';
+
 interface QueryResponse {
   items: Item[];
 }
@@ -17,7 +19,11 @@ export class ItemService {
   constructor(
     private http: HttpClient,
     private auth: AuthService, 
-  ) { }
+  ) {
+    if (options.apiURL) {
+      this.itemsURL = options.apiURL + this.itemsURL;
+    }
+  }
 
   private requestOptions(): {headers: HttpHeaders} {
     return {

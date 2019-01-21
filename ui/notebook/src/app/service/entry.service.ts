@@ -6,6 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Entry } from '../models/entry.model';
 
+import { options } from '../../environments/environment';
+
 interface QueryResponse {
   entries: Entry[];
 }
@@ -17,7 +19,11 @@ export class EntryService {
   constructor(
     private http: HttpClient,
     private auth: AuthService, 
-  ) { }
+  ) {
+    if (options.apiURL) {
+      this.entriesURL = options.apiURL + this.entriesURL;
+    }
+  }
 
   private requestOptions(): {headers: HttpHeaders} {
     return {
