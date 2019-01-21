@@ -11,6 +11,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBarModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRadioModule } from '@angular/material/radio';
@@ -43,6 +44,7 @@ import { ItemPropertiesFormComponent } from './item-properties-form/item-propert
 import { InventoryComponent } from './inventory/inventory.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { ItemComponent } from './nav-menu/item/item.component';
+import { SnackComponent } from './snack/snack.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +61,7 @@ import { ItemComponent } from './nav-menu/item/item.component';
     InventoryComponent,
     NavMenuComponent,
     ItemComponent,
+    SnackComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,7 +84,8 @@ import { ItemComponent } from './nav-menu/item/item.component';
     MatAutocompleteModule,
     MatRadioModule,
     MatMenuModule,
-    MatTableModule
+    MatTableModule,
+    MatSnackBarModule,
   ],
   entryComponents: [ItemFormDialog, SnackComponent],
   providers: environment.mockBackend ? [mockBackendProvider] : [],
