@@ -17,5 +17,6 @@
 vendor/
 cmd/api/api
 build/api/*
+build/automigrate/*
 build/api/public/
 !build/api/public/.keep

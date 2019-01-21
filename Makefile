@@ -26,6 +26,15 @@ start:
 	echo "starting"
 	./start api
 
+ng:
+	cd ui/notebook && ng serve --port 6634
+
+uistaging:
+	cd ui/notebook && ng serve --configuration=staging --port 6634
+
+backend: api
+	./start api
+
 gen:
 	go generate ./...
 
