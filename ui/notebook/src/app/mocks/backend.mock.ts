@@ -6,7 +6,7 @@ import { HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTT
 import { Observable, of, throwError } from 'rxjs';
 import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
 
-import { Item, ItemProperty } from '../models/item.model';
+import { Item, ItemProperty, ItemType } from '../models/item.model';
 import { Entry } from '../models/entry.model';
 import { Transaction, TransactionType } from '../models/transaction.model'
 import { MockDB } from './db.mock';
@@ -18,13 +18,13 @@ export class MockBackendInterceptor implements HttpInterceptor {
   private entries: MockDB<Entry>;
 
   constructor() {
-    var boroDish = new Item("borosilicate dish, 60mm", "item-0", 10, 5);
-    var pp5Dish = new Item("PP5 dish, 45mm", "item-1", 10, 6);
-    var hwfpJar = new Item("HWFP jar, 1 qt", "item-2", 10, 8, [
+    var boroDish = new Item("borosilicate dish, 60mm", "item-0", ItemType.Inventory, 10, 5);
+    var pp5Dish = new Item("PP5 dish, 45mm", "item-1", ItemType.Inventory, 10, 6);
+    var hwfpJar = new Item("HWFP jar, 1 qt", "item-2", ItemType.Inventory, 10, 8, [
       new ItemProperty("createdat", "02/13/4392 32:21:64"),
     ]);
-    var no17LC = new Item("item-3", "#17 LC", 10, 6);
-    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", 72, 12);
+    var no17LC = new Item("item-3", "#17 LC", ItemType.Unique, 10, 6);
+    var no17HWFP = new Item("item-4", "#17 HWFP jar, 1 qt", ItemType.Unique, 72, 12);
 
     this.items = new MockDB<Item>([boroDish, pp5Dish, hwfpJar, no17LC, no17HWFP]);
 
@@ -91,10 +91,10 @@ export class MockBackendInterceptor implements HttpInterceptor {
       // create
       if (request.url.endsWith('/api/items') && request.method === 'POST') {
         // save new item
-        let item = this.items.insert(Item.fromObject(request.body));
+        let items = this.items.insert(Item.fromObject(request.body));
 
         // respond 200 OK
-        return of(new HttpResponse({ status: 200, body: item }));
+        return of(new HttpResponse({ status: 200, body: {items: items} }));
       }
 
       // update
@@ -135,10 +135,10 @@ export class MockBackendInterceptor implements HttpInterceptor {
       // create entry
       if (request.url.endsWith('/api/entries') && request.method === 'POST') {
         // save new entry
-        let entry = this.entries.insert(Entry.fromObject(request.body));
+        let entries = this.entries.insert(Entry.fromObject(request.body));
 
         // respond 200 OK
-        return of(new HttpResponse({ status: 200, body: entry }));
+        return of(new HttpResponse({ status: 200, body: {entries: entries} }));
       }
 
       // update entry
