@@ -42,6 +42,7 @@ export class TransactionComponent implements OnInit {
       this.itemUUIDSubscriber = subscriber;
     }) as Observable<string>).pipe(
       startWith(this.transaction.itemUUID),
+      tap(u => console.log("ITEM UUID", u)),
       switchMap(uuid => this.store.select(getItemData(uuid))),
     ).subscribe(item => this.item = item);
   }

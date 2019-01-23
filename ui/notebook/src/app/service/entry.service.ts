@@ -41,6 +41,7 @@ export class EntryService {
   getEntries(): Observable<Entry[]> {
     return this.http.get<QueryResponse>(this.entriesURL, this.requestOptions())
       .pipe(
+        tap(console.log),
         map(data => data.entries.map(entry => Entry.fromObject(entry))),
         catchError(this.handleError('getEntries', [])),
       );
@@ -59,6 +60,7 @@ export class EntryService {
 
   /** POST: create a new entry */
   createEntry(entry: Entry): Observable<Entry> {
+    console.log("bouta create", entry)
     return this.http.post<Entry>(this.entriesURL, entry, this.requestOptions()).pipe(
       map(entry => Entry.fromObject(entry)),
       catchError(this.handleError<Entry>('createEntry'))

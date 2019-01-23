@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/xanderflood/notebook/lib/tools"
 	"github.com/xanderflood/notebook/lib/web"
@@ -166,6 +167,9 @@ func (sa *ServiceAgent) GetEntry(w http.ResponseWriter, r *http.Request) {
 
 //CreateItem CreateItem
 func (sa *ServiceAgent) CreateItem(w http.ResponseWriter, r *http.Request) {
+	a, _ := httputil.DumpRequest(r, true)
+	fmt.Println(string(a))
+
 	body := CreateItemRequest{}
 	auth, ok := sa.frontmatterer.Frontmatter(w, r, &body)
 	if !ok {
@@ -187,6 +191,9 @@ func (sa *ServiceAgent) CreateItem(w http.ResponseWriter, r *http.Request) {
 
 //CreateEntry CreateEntry
 func (sa *ServiceAgent) CreateEntry(w http.ResponseWriter, r *http.Request) {
+	a, _ := httputil.DumpRequest(r, true)
+	fmt.Println(string(a))
+
 	body := CreateEntryRequest{}
 	auth, ok := sa.frontmatterer.Frontmatter(w, r, &body)
 	if !ok {
